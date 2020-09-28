@@ -1,5 +1,4 @@
-[submodule "main-test/src/static/app/test-common"]
-	path = main-test/src/static/app/test-common
-	url = https://github.com/mukeshsalunkhe/DEQ-Reports.git
-	branch = v4.0_TomcatMigration
-	
+[submodule "main-test/src/static/core"]
+	path = main-test/src/static/core
+	url = https://github.com/mitesh-mankame/UI-Library.git
+	branch = v2.0
