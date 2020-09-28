@@ -1,0 +1,4 @@
+[submodule "main-test/src/static/app/test-common"]
+	path = main-test/src/static/app/test-common
+	url = https://github.com/mukeshsalunkhe/TestCommonUI/tree/master/main-common
+	branch = master
