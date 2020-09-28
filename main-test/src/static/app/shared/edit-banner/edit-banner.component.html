@@ -1,0 +1,10 @@
+<div class="card bg-secondary py-2 mb-3" *ngIf="!editClicked">
+  <div class="card-body" style="min-height: auto;">
+    <div class="clearfix">
+      <h5 class="card-title text-success float-left">DMR Spreadsheets has already been made & downloaded</h5>
+      <a href="javascript:void(0)" class="float-right h6" (click)="updateStatus()">EDIT</a>
+    </div>
+    <p class="card-text h6">Clicking edit to make further changes, you will need to re-download a new excel after
+      making changes.</p>
+  </div>
+</div>

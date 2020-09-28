@@ -1,0 +1,82 @@
+<form class="horizontal" [formGroup]="certifyForm">
+  <div class="card-body pt-0">
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="h2" [innerHTML]="ars.header"></div>
+    <div class="h3 lead pl-2 font-weight-normal" [innerHTML]="ars.bodyCopy"></div>
+    <h2>Certify Your Submission.</h2>
+    <div class="row">
+      <div class="custom-control custom-checkbox" [ngClass]="{'has-danger': errorsFields['chkClarifyStatement']}">
+        <input type="checkbox" class="custom-control-input" id="chk_certify_submission" formControlName="certify" />
+        <label for="chk_certify_submission" class="custom-control-label" [innerHTML]="certifyText"></label>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+    <div class="divider-horizontal pt-3"></div>
+    <section>
+      <h3 class="pt-3">Please verify your identity by answering the following security question.</h3>
+      <div class="pl-1">
+        <h6><span class="text-primary">*</span><em>Indicates required field</em></h6>
+
+        <div class="row form-group h5 no-gutters pt-3">
+          <div class="col-1">Question:</div>
+          <div class="col-10">{{challengeQuestion?.question}}</div>
+          <div class="clearfix"></div>
+        </div>
+        <div class="row form-group h5 no-gutters">
+          <label for="ans" class="col-1 required"><span class="h4">Answer: </span></label>
+          <div class="col-4" [ngClass]="{'has-danger': errorsFields['challengeQuestion.answer']}">
+            <input type="text" id="ans" formControlName="answer" class="form-control" />
+          </div>
+          <div class="clearfix"></div>
+        </div>
+      </div>
+    </section>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="backClick()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+    </button>
+    <button type="button" id="submitButton2" class="btn btn-primary float-right" (click)="continueClick(certifyForm.value)">
+      CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+
+
+</form>
+
+<div *ngIf="accLock" class="modal-backdrop fade show"></div>
+<div *ngIf="accLock" class="modal fade show" id="myModal" role="dialog">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header mx-3 pl-0">
+        <h1 class="modal-title font-weight-bold text-primary">ACCOUNT LOCKED</h1>
+      </div>
+      <div class="modal-body p-3">
+        <h3 class="mt-0">ACCOUNT LOCKED: You have failed to provide valid details after 5 attempts. Please call (844) 827-4768 to unlock your account.</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary float-right" (click)="exitUser()">OK <span class="arrow right"> <i
+              class="fa fa-chevron-right"></i></span></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="finalSubmission" class="modal-backdrop fade show"></div>
+<div *ngIf="finalSubmission" class="modal fade show" id="myModal" role="dialog">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header mx-3 pl-0">
+        <h2 class="modal-title font-weight-bold text-primary">ALERT</h2>
+      </div>
+      <div class="modal-body p-3">
+        <h3 class="mt-0">All submissions, even incomplete submissions, are final. myDEQ does not currently accept changes to a report once you submit it.</h3>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary float-right" (click)="closeMe()">OK <span class="arrow right"> <i class="fa fa-chevron-right"></i></span></button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,245 @@
+<div class="card-body pt-0">
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+  <section class="mydeq-summary">
+    <div class="row no-gutters">
+      <h3 class="col-10">Summary</h3>
+      <button type="button" class="btn btn-sm btn-primary float-right" (click)="downloadSummary()">DOWNLOAD SUMMARY
+        PDF<span class="arrow right"><i class="fa fa-chevron-right"></i></span></button>
+      <div class="clearfix"></div>
+    </div>
+    <h6 class="font-weight-normal pl-2">Please review and click EDIT to modify. Then click CONTINUE.</h6>
+    <div class="pt-2 px-2 table-responsive">
+      <table class="table table-striped">
+        <tbody class="h5">
+          <tr>
+            <td width="35%">
+              <div class="pl-1">Place</div>
+            </td>
+            <td class="font-weight-light" colspan="3">
+              <p>{{utils.placeName}}</p>
+              <p>{{utils.placeAddress}}</p>
+            </td>
+          </tr>
+          <tr>
+            <td width="25%">
+              <div class="pl-1">Which type of DMR do you need to create?</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              {{selectedReportType}}
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('sample_date')">EDIT</a>
+            </td>
+          </tr>
+          <tr>
+            <td  width="25%">
+              <div *ngIf="utils.path === 'no_data_dmr'" class="pl-1">What is the wet season start date for DMR?</div>
+              <div *ngIf="utils.path === 'wet_season'" class="pl-1">What is the sample start date?</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              <strong>Sample Start Date:</strong> {{sampleStartDate}}
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('sample_date')">EDIT</a>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path === 'no_data_dmr'">
+            <td width="25%">
+              <div class="pl-1">Why is there no data to report?</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              {{noDataReason?.nodiDesc}}
+            </td>
+
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('no_data_reason')">EDIT</a>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'">
+            <td width="25%">
+              <div class="pl-1">Do you need to provide a No Data Indicator (NODI) code for this report?</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              {{outfallsForNoDiCodeList && outfallsForNoDiCodeList.length > 0 ? 'Yes' : 'No'}}
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('nodi_code')">EDIT</a>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr' && outfallsForNoDiCodeList.length > 0"
+            style="background-color: #fffaeb;">
+            <td colspan="3" class="font-weight-light">
+              <table class="table table-striped border-bottom mt-2 h6">
+                <thead>
+                  <tr>
+                    <th>Outfall</th>
+                    <th>NODI</th>
+                  </tr>
+                </thead>
+                <tbody class="font-weight-light">
+                  <tr *ngFor="let outfall of outfallsForNoDiCodeList; let i=index" [ngClass]="{'bg-white': i % 2 == 0}">
+                    <td>{{outfall.outfallName}}</td>
+                    <td>{{outfall.nodiDesc }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td class="pr-3 text-right"></td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'" style="background-color:transparent;">
+            <td colspan="3">
+              <div class="pl-1">How many samples have been taken for each outfalls?</div>
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('sample_count')">EDIT</a>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'" style="background-color:transparent;">
+            <td class="font-weight-light" colspan="4">
+              <table class="table table-striped border-bottom mt-2 h6">
+                <thead>
+                  <tr style="background-color:transparent;">
+                    <th>Outfall</th>
+                    <th>NODI</th>
+                    <th *ngIf = "utils.module !== 'cgp20'">Accelerated Monitoring</th>
+                    <th># of Samples</th>
+                  </tr>
+                </thead>
+                <tbody class="font-weight-light">
+                  <tr *ngFor="let outfall of outfallSampleCountList; let i=index" [ngClass]="{'bg-white': i % 2 == 0}">
+                    <td>{{outfall.outfallName}}</td>
+                    <td>{{outfall.parameterName}}</td>
+                    <td *ngIf = "utils.module !== 'cgp20'"><i *ngIf="outfall.acclrMonitYN === 'Y'"
+                        class="fas fa-lg fa-exclamation-triangle text-warning px-2"
+                        aria-hidden="true"></i>{{outfall?.acclrMonitYN === 'Y' ? 'Active' : ''}}</td>
+                    <td>{{outfall.sampleCount}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'" style="background-color:transparent;">
+            <td width="25%">
+              <div class="pl-1">Do you need to provide results for other parameters?</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              {{optionalOutfallSampleCountList && optionalOutfallSampleCountList.length > 0 ? 'Yes' : 'No'}}
+            </td>
+            <td class="pr-3 text-right">
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'" style="background-color:transparent;">
+            <td class="font-weight-light" colspan="4">
+              <table class="table table-striped border-bottom mt-2 h6">
+                <thead>
+                  <tr style="background-color:transparent;">
+                    <th>Outfall</th>
+                    <th>Parameter</th>
+                    <th># of Samples</th>
+                  </tr>
+                </thead>
+                <tbody class="font-weight-light">
+                  <tr *ngFor="let outfall of optionalOutfallSampleCountList; let i=index"
+                    [ngClass]="{'bg-white': i % 2 == 0}">
+                    <td>{{outfall.outfallName}}</td>
+                    <td>{{outfall.parameterName}}</td>
+                    <td>{{outfall.sampleCount}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr' && utils.module !== 'cgp20'" style="background-color: #fffaeb;">
+            <td colspan="3">
+              <div class="pl-1">How were these outfalls sampled?</div>
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('sample_method')">EDIT</a>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr' && utils.module !== 'cgp20'" style="background-color: #fffaeb;">
+            <td class="font-weight-light" colspan="4">
+              <table class="table table-striped border-bottom mt-2 h6">
+                <thead>
+                  <tr>
+                    <th>Outfall</th>
+                    <th>Parameter</th>
+                    <th>Sample Type</th>
+                  </tr>
+                </thead>
+                <tbody class="font-weight-light">
+                  <tr *ngFor="let outfall of outfallSampleMethodList; let i=index" [ngClass]="{'bg-white': i % 2 == 0}">
+                    <td>{{outfall.outfallName}}</td>
+                    <td>{{outfall.parameterName}}</td>
+                    <td>{{methodTypeList[outfall.sampleMethod]}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+          <tr *ngIf="utils.path === 'no_data_dmr'" style="background-color:transparent;">
+            <td width="25%">
+              <div class="pl-1">Download Excel:</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              <a [href]="'service/' + this.utils.module + '/download/downloadExcel'" target="_blank">Click to download
+                Excel<span class="arrow right"> <i class="fa fa-chevron-right"></i></span></a>
+            </td>
+
+            <td class="pr-3 text-right">
+              <!-- <a href="javascript:void(0)" class="text-primary" (click)="editDetails('no_data_reason')">EDIT</a> -->
+            </td>
+          </tr>
+          <tr [ngStyle]="{'background-color': utils.path === 'no_data_dmr' ? '#fffaeb' : 'transparent'}">
+            <td width="25%">
+              <div class="pl-1" *ngIf="!deficiencies.isZeroDeficiencies">Potential deficiencies have been identified on
+                your DMR.</div>
+              <div class="pl-1" *ngIf="deficiencies.isZeroDeficiencies">Your DMR has been checked for potential
+                deficiencies.</div>
+            </td>
+            <td class="font-weight-light" colspan="2" *ngIf="!deficiencies.isZeroDeficiencies">
+              <i class="warning fas fa-lg fa-exclamation-triangle text-danger" style="margin-top: 5px;"
+                aria-hidden="true"></i>
+              <span> {{deficiencies?.noOfDeficiency}} DEFICIENCIES DETECTED</span>
+            </td>
+            <td class="font-weight-light" colspan="2" *ngIf="deficiencies.isZeroDeficiencies">
+              <i class="fas fa-check fa-lg text-success pr-3"></i>
+              <span>No Potential Deficiencies Detected</span>
+            </td>
+            <td class="pr-3 text-right">
+              <!-- <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable" (click)="editDetails('no_data_reason')">EDIT</a> -->
+            </td>
+          </tr>
+          <tr *ngIf="utils.path !== 'no_data_dmr'" style="background-color: #fffaeb;">
+            <td width="25%">
+              <div class="pl-1">Uploaded Completed Excel:</div>
+            </td>
+            <td class="font-weight-light" colspan="2">
+              <a [href]="'service/' + this.utils.module + '/download/uploaded_excel'" target="_blank">{{uploadedFile}}
+                <!-- <i class="fas fa-download"></i> --><span class="arrow right"> <i class="fa fa-chevron-right"></i></span></a>
+            </td>
+            <td class="pr-3 text-right">
+              <a href="javascript:void(0)" class="text-primary" *ngIf="isEditable"
+                (click)="editDetails('upload')">EDIT</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+<div class="card-footer">
+  <button type="button" class="btn btn-primary float-left" (click)="goBack()" *ngIf="isEditable">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+  </button>
+  <button type="button" class="btn btn-primary float-right" (click)="continue()">
+    {{displayLabels?.continueBTNTxt}}<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>

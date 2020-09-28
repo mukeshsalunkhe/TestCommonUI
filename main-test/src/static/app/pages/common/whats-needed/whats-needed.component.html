@@ -1,0 +1,24 @@
+<div class="card-body">
+  <h3>{{pageText.header}}</h3>
+  <h6 class="pl-2">{{pageText.sub_header}}</h6>
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+  <ul class="list-unstyled h4 pl-3 py-3">
+    <li *ngFor="let item of pageText.action_list; let i = index;" class="deq-numberlist n{{i+1}}">{{item}} </li>
+  </ul>
+  <div class="alert alert-warning h4 pl-3 pt-3 border-0 font-weight-light clearfix" role="alert">
+    <i class="warning fas fa-2x fa-exclamation-triangle text-danger pt-2 pb-5" aria-hidden="true"></i>
+    <span [innerHTML]="pageText.warning_msg"></span>
+  </div>
+</div>
+<div class="card-footer">
+  <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+  </button>
+  <button type="button" class="btn btn-primary float-right" (click)="continue()">
+    GET STARTED<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>
+<div class="clearfix"></div>
+
+<mydeq-alert-modal></mydeq-alert-modal>

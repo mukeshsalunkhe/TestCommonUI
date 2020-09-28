@@ -1,0 +1,86 @@
+<form class="form-horizontal" [formGroup]="dischargeEventForm">
+<div class="card-body">
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+  <div class="table-responsive" *ngIf="showEventSection">
+    <table class="table table-striped h6" [mfData]="model.dischargeEventList" #mf="mfDataTable" [mfRowsOnPage]="15" mfSortBy="eventName" mfSortOrder="desc">
+      <thead>
+        <tr>
+          <td><mfDefaultSorter by="eventId">Discharge Event ID</mfDefaultSorter></td>
+          <td><mfDefaultSorter by="outfallName">Point of discharge</mfDefaultSorter></td>
+          <td>Discharge Start Date</td>
+          <td>Discharge End Date</td>
+          <td style="width: 10%">Status</td>
+          <td style="width: 7%">View</td>
+          <td style="width: 7%">Delete</td>
+        </tr>
+      </thead>
+      <tbody class="font-weight-light">
+        <tr *ngFor="let dischargeEvent of mf.data;let i=index">
+          <td>{{dischargeEvent.eventId}}</td>
+          <td>{{dischargeEvent.outfallName}}</td>
+          <td>{{dischargeEvent.dischargeStartDate}}</td>
+          <td>{{dischargeEvent.dischargeEndDate}}</td>
+          <td>{{dischargeEvent.status}}</td>
+          <td>
+            <a id="{{dischargeEvent.eventId}}" href="javascript:void(0)" (click)="viewDischargeEventnDetails(dischargeEvent.eventId)">VIEW</a>
+          </td>
+          <td>
+            <span id="deleteEventAppId_{{dischargeEvent.eventId}}" class="buffer-left-5" [ngbPopover]="deleteConfirm">
+              <a href="javascript:void(0)">
+                <i class="fa fa-trash-alt fa-lg text-primary" id="{{dischargeEvent.eventId}}"></i>
+              </a>
+            </span>
+          </td>
+          <ng-template #deleteConfirm>
+            <h6>Are you sure you want to delete?</h6>
+            <div class="w-100 d-block">
+              <button type="button" class="btn btn-primary float-left" id="delete_user_Y" (click)="deleteEvent('Y',dischargeEvent.eventId)">YES</button>
+              <button type="button" class="btn btn-danger float-right" id="delete_user_N" (click)="deleteEvent('N',dischargeEvent.eventId)">NO</button>
+              <div class="clearfix"></div>
+            </div>
+          </ng-template>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="7" class="cushion-bottom-0 buffer-bottom-0 cushion-left-0">
+            <div class="cushion-bottom-0 buffer-bottom-0" style="color: #d2c1ab;">
+              <mfBootstrapPaginator></mfBootstrapPaginator>
+              <div class="clearfix"> </div>
+            </div>
+            <div class="clearfix"> </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <section>
+      <h4 class="pr-5">Do you want to log monitoring samples for a discharge event that meets the DMGP Discharge Monitoring Reporting (e-DMR) requirements ?<sup [ngbTooltip]="tooltip" placement="right"><i class="far fa-question-circle" aria-hidden="true"></i></sup></h4>
+      <div class="pl-3 py-3">
+        <div class="custom-control custom-radio" [ngClass]="{'has-danger': error_fields['booleanAnswer']}">
+          <input type="radio" class="custom-control-input" id="userSelectionY" formControlName="booleanAnswer" name="booleanAnswer" value="Y" />
+          <label class="custom-control-label" for="userSelectionY">Yes</label>
+        </div>
+        <div class="custom-control custom-radio" [ngClass]="{'has-danger': error_fields['booleanAnswer']}">
+          <input type="radio" class="custom-control-input" id="userSelectionN" formControlName="booleanAnswer" name="booleanAnswer" value="N" />
+          <label class="custom-control-label" for="userSelectionN">No</label>
+        </div>
+      </div>
+    </section>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="backClick()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(dischargeEventForm.value)">
+      CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>
+
+
+<ng-template #tooltip>
+  <div [innerHTML]="utils.tooltipText.logEvent"></div>
+</ng-template>

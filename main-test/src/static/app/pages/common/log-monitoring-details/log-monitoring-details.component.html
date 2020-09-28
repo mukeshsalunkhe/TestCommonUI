@@ -1,0 +1,133 @@
+<div class="card-body pt-0">
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+
+  <table class="table border-bottom mt-2 h6">
+    <thead>
+      <tr>
+        <th>Discharge Event ID</th>
+        <th>Point of Discharge Name</th>
+        <th>Discharge Start Date</th>
+        <th>Discharge End Date</th>
+        <th width="30%">Discharge Activities</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="font-weight-light">
+        <td>{{model?.dischargeEvent?.eventId}}</td>
+        <td>{{model?.dischargeEvent?.outfallName}} </td>
+        <td>{{model?.dischargeEvent?.dischargeStartDate}} </td>
+        <td>{{model?.dischargeEvent?.dischargeEndDate}} </td>
+        <td><span *ngFor="let dischargeActivity of model?.dischargeEvent?.strDischargeActivities;let i=index">{{dischargeActivity}}<br></span></td>
+      </tr>
+    </tbody>
+  </table>
+
+<section>
+  <h3>For your discharge event, what are the monitored sample values?</h3>
+  <h6 class="pl-2">Provide any requested information and click ENTER.</h6>
+
+  <div class="row pl-2">
+    <form class="form-horizontal" [formGroup]="monitoringSampleFrm">
+      <table id="lineItemsList" class="table table-controls" [mfData]="pageDisplayRows.controls" #mf1="mfDataTable"
+        [mfRowsOnPage]="rowPerPage" [isDynamicTable]="true" (pagenumber)="handlePageChange($event)" (startSliceIndex)="setNewRowCounter($event)">
+        <thead>
+          <tr>
+            <th>Sample Date</th>
+            <th>Parameter</th>
+            <th>Value</th>
+            <th>Unit</th>
+            <th>Hardness</th>
+            <th>PH</th>
+            <th>Temperature</th>
+            <th>NODI</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody formArrayName="dmgpExcelSheetCtrls" >
+          <tr class="font-weight-normal" *ngFor="let row of mf1.data; let row_id=index;" [id]="row_id" [formGroupName]="getRowId(row_id)">
+            <td style="width:16%"  [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].sampleEnteredDate']}">
+              <div class="input-group" [ngClass]="{'has-danger': error_fields['pickupDate']}">
+                <div class="input-group-prepend">
+                  <button id="pickupDateBtn" class="btn btn-primary btn-sm" (click)="sampleEnteredDateDP.toggle()" type="button" [disabled]="disablePage"><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+                </div>
+                <input id="pickupDate" type="text" class="form-control" maxlength="10" formControlName="sampleEnteredDate" readonly ngbDatepicker #sampleEnteredDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate" [readOnly]="disablePage" placement="bottom" />
+              </div>             
+            </td>
+            <td  style="width:18%" class="cushion-left-0 cushion-right-10" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].parameterId']}">
+              <select class="custom-select" formControlName="parameterId" (change)="onParameterSelect($event.target.value,getRowId(row_id),monitoringSampleFrm.value)"> <!--[ngModel]="getData(getRowId(row_id),'parameterId')"-->
+                <option VALUE="-1">SELECT ONE</option>
+                <option *ngFor="let parameterDetail of model.optionalDmgpExcelSheetDatas" value="{{parameterDetail.parameterId}}">{{parameterDetail.parameterName}}</option>
+              </select>
+            </td>
+            <td  style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].sampleValue']}">
+              <input tabindex="getTabIndex()" type="text" formControlName="sampleValue" class="form-control" maxlength="13" /> <!--[ngModel]="getData(getRowId(row_id),'sampleValue')" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'sampleValue')" -->
+            </td>
+            <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].unit']}">
+              <input tabindex="getTabIndex()" formControlName="unit" type="text" class="form-control" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'unit')"/> <!--[ngModel]="getData(getRowId(row_id),'unit')"-->
+            </td>
+            <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].hardness']}">
+              <input tabindex="getTabIndex()" formControlName="hardness" type="text" class="form-control" maxlength="13"/> <!--[ngModel]="getData(getRowId(row_id),'hardness')" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'hardness')"-->
+            </td>
+
+            <td style="width:10%"  class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].ph']}">
+              <input tabindex="getTabIndex()" formControlName="ph" maxlength="5" type="text" class="form-control"/> <!--[ngModel]="getData(getRowId(row_id),'ph')" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'ph')"-->
+            </td>
+
+            <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['dmgpExcelSheetDatas['+getRowId(row_id)+'].temperature']}">
+              <input tabindex="getTabIndex()" formControlName="temperature" maxlength="7" type="text" class="form-control"/> <!--[ngModel]="getData(getRowId(row_id),'temperature')" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'temperature')"-->
+            </td>
+
+            <td>
+              <select class="custom-select" formControlName="parameterNodiCode"> <!--[ngModel]="getData(getRowId(row_id),'parameterNodiCode')" (blur)="storeUserData(monitoringSampleFrm.value,getRowId(row_id),'parameterNodiCode')" -->
+                <option VALUE="-1">SELECT ONE</option>
+                <option *ngFor="let noDiDetails of model.parameterNodiCodes" value="{{noDiDetails.reasonId}}">{{noDiDetails.reasonText}}</option>
+              </select>
+            </td>
+            <td style="width:3%" >
+              <span *ngIf="!disablePage && row.get('optionalIndicator').value === 'Y'">
+                <a [id]="'deleteDischarge_'+ getRowId(row_id)" href="javascript:void(0)" [ngbPopover]="deleteDischarge" tabindex="getTabIndex()" ><i class="pl-2 fa fa-trash-alt fa-lg text-primary"></i></a>
+                <ng-template #deleteDischarge>
+                  <div [id]="'deleteDischarge_' + row_id">
+                    <h6>Are you sure you want to delete?</h6>
+                    <div class="w-100 d-block">
+                      <button type="button" class="btn btn-primary btn-sm float-left" [id]="'delete_line_item_Y_'+row_id" (click)="deleteLineItem('Y',getRowId(row_id),model.dmgpExcelSheetDatas[getRowId(row_id)]?.idno);">YES</button>
+                      <button type="button" class="btn btn-danger btn-sm float-right" [id]="'delete_line_item_N_'+row_id" (click)="deleteLineItem('N',getRowId(row_id),model.dmgpExcelSheetDatas[getRowId(row_id)]?.idno);">NO</button>
+                      <div class="clearfix"></div>
+                    </div>
+                  </div>
+                </ng-template>
+              </span>
+            </td>
+          </tr>
+        </tbody> 
+        <tfoot>
+          <tr>
+            <td colspan="4">
+              <div class="cushion-bottom-0 buffer-bottom-0">
+                <mfBootstrapPaginator [errorPages]="errorPages"></mfBootstrapPaginator>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </form>
+  </div>
+  <hr />
+  <div *ngIf="!disablePage" class="w-100 d-block">
+    <a class="float-right h5" href="javascript:void(0)" (click)="addMoreRows()">
+      <i class="fa fa-lg  fa-plus-square align-vertical"></i>
+      <span class="pl-2 pt-1">Add Rows</span>
+    </a>
+    <div class="clearfix"></div>					
+  </div>
+</section>
+</div>
+<div class="card-footer">
+  <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="goBack()">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+  </button>
+  <button type="button" id="submitButton2" class="btn btn-primary float-right" (click)="continue(monitoringSampleFrm.getRawValue())">
+    CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>

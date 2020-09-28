@@ -1,0 +1,46 @@
+<form class="form-horizontal" [formGroup]="reportingPeriodForm">
+	<div class="card-body">
+    <h3>{{pageText.header}}</h3>
+    <h6 class="pl-2">{{pageText.sub_header}}</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center">{{error}}</div>  
+    <table class="table table-controls table-striped">
+      <thead>
+        <tr>
+          <th class="radio-column no-bar"></th>
+          <th>Reporting Period</th>
+          <th>Due Date</th>
+          <th *ngIf="pageText.table_column?.progress">Progress</th>
+          <th *ngIf="pageText.table_column?.status">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let period of reportingPeriod; let i=index" class="">
+          <td class="radio-column">
+            <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['selectedCycleId']}">
+              <input type="radio" class="custom-control-input" id="{{period.reportingCycleId}}" [value]="period.reportingCycleId" name="selectedCycleId" [disabled]="period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED" [checked]="reportingPeriodForm.controls['selectedCycleId'].value===period.reportingCycleId" (click)="selectReportingPeriod(period.reportingCycleId,period.disabledStatusCode)">
+              <label class="custom-control-label" for="{{period.reportingCycleId}}" (click)="selectReportingPeriod(period.reportingCycleId,period.disabledStatusCode)" > </label>
+            </div>
+          </td>
+          <td [ngClass]="{'text-muted': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED}">{{period.reportingCycle}}</td>
+          <td  [ngClass]="{'text-muted': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED, 'mydeq-orange': period.isExpired==='Y'}">{{period.reportingDueDate}} {{period?.errorStatus==='Y'?"(PAST DUE)":""}}</td>
+          <td class="text-primary" *ngIf="pageText.table_column?.progress" [ngClass]="{'text-muted': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED}">{{(period.reportingProgress || '0') | number}}%</td>
+          <td *ngIf="pageText.table_column?.status" [ngClass]="{'text-muted': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED}">
+            <span class="badge" [ngClass]="{'badge-green': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED, 'badge-yellow': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.UPLOADED, 'badge-red': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.ERROR, 'badge-gray': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.DOWNLOADED, 'disabled': period.disabledStatusCode===utils.REPORTING_PERIOD_STATUS_CODE.SUBMITTED}" *ngIf="period.disabledStatusCode"></span> {{period.reportingStatusText}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- action bar -->
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(reportingPeriodForm.value)">
+      CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+  <div class="clearfix"></div>
+</form>
+<mydeq-alert-modal></mydeq-alert-modal>

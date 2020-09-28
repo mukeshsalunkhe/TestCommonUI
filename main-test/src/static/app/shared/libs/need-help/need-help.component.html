@@ -1,0 +1,73 @@
+<div *ngIf="showHelp" class="modal-backdrop fade show" style="z-index: 1053;"></div>
+<div *ngIf="showHelp" class="modal fade show" id="myModal" role="dialog" style="z-index: 1056;"
+  [ngClass]="{'modal-scroll': (faqs && faqs.length > 0) && (videos && videos.length > 0)}">
+  <div class="modal-dialog modal-dialog-centered"
+    [ngClass]="{'modal-lg': (faqs && faqs.length > 0) || (videos && videos.length > 0)}">
+    <div class="modal-content">
+      <div class="modal-header mx-3 pl-0">
+        <h2 class="modal-title font-weight-bold text-primary">NEED HELP ON THIS PAGE?</h2>
+      </div>
+      <div class="modal-body pt-3 pb-5">
+        <div id="video" class="card" *ngIf="videos && videos.length > 0">
+          <div class="card-body pb-0 pt-2">
+            <div class="mx-3">
+              <div class="embed-responsive" *ngFor="let video of videos" style="height:315px">
+                <h4 class="card-title text-primary">{{video.title}}</h4>
+                <iframe height="315px" class="embed-responsive-item" [attr.src]="video.url | safeUrl" frameborder="0"
+                  allowfullscreen></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="faq" class="card pt-2" *ngIf="faqs && faqs.length > 0">
+          <div class="card-body pb-0 pt-2">
+            <h3 class="card-title text-primary">FAQs:</h3>
+            <div class="mx-2">
+              <ngb-accordion #acc="ngbAccordion" (panelChange)="beforeChange($event)">
+                <ngb-panel *ngFor="let faq of faqs, let i=index;" id="ngb-panel-{{i + 1}}" type="info">
+                  <ng-template ngbPanelTitle>
+                    <div class="h5">
+                      <i id="square-ngb-panel-{{i + 1}}" class="fa fa-plus-square-o pl-2"></i> {{faq.title}} </div>
+                  </ng-template>
+                  <ng-template ngbPanelContent class="bg-info">
+                    <span class="h6" [innerHTML]="faq.description"></span>
+                  </ng-template>
+                </ngb-panel>
+              </ngb-accordion>
+            </div>
+          </div>
+        </div>
+        <div id="contactUS" class="card" *ngIf="contactDetails && contactDetails.length > 0">
+          <div class="card-body py-0">
+            <h3 *ngIf="(faqs && faqs.length > 0) || (videos && videos.length > 0)" class="card-title text-primary my-2">
+              Contact Us:</h3>
+            <div class="card-text h5 mb-2 pb-1" *ngFor="let contact of contactDetails; let last = last"
+              [ngClass]="{'mx-3': (faqs && faqs.length > 0) || (videos && videos.length > 0), 'border-bottom': !last}">
+              <div class="float-left font-weight-normal">{{contact.division}}</div>
+              <div class="float-right text-primary">{{contact.phone | phone}}</div>
+              <div class="clearfix"></div>
+            </div>
+
+          </div>
+        </div>
+        <div id="resource" class="card" *ngIf="resourceDetails && resourceDetails.length > 0">
+          <div class="card-body">
+            <h3 class="card-title text-primary">Resources:</h3>
+            <p class="card-text h6 mb-1" *ngFor="let resource of resourceDetails">
+              <strong>{{resource.title}}</strong>
+              <span class="text-primary">{{resource.description}}</span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary float-right" (click)="close()">EXIT HELP
+          <span class="arrow right">
+            <i class="fa fa-chevron-right"></i>
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

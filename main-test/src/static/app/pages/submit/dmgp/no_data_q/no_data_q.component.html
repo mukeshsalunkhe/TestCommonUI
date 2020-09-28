@@ -1,0 +1,47 @@
+<form [formGroup]="nodataReasonQForm">
+  <div class="card-body pt-0">
+    <h3 class="buffer-bottom-40">{{headerText}}<sup [ngbTooltip]="tooltip" placement="bottom"><i class="far fa-question-circle" aria-hidden="true"></i></sup></h3>
+    <h6 class="pl-2">Select one, and click CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+
+    <div class="custom-controls-stacked pl-2 pt-4">
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorsFields['booleanAnswer']}">
+        <input type="radio" class="custom-control-input" id="terminateNoDataYes" value="Y" formControlName="booleanAnswer" name="booleanAnswer" (change)="doYouHaveData('Y')">
+        <label class="custom-control-label" for="terminateNoDataYes">Yes</label>
+      </div>
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorsFields['booleanAnswer']}">
+        <input type="radio" class="custom-control-input" id="terminateNoDataNo" value="N" formControlName="booleanAnswer" name="booleanAnswer" (change)="doYouHaveData('N')">
+        <label class="custom-control-label" for="terminateNoDataNo">No</label>
+      </div>
+        <div *ngIf="nodataReasonQForm.get('booleanAnswer').value  === 'N'" class="bg-secondary ml-5 p-3">
+          <h4 class="pl-1 h3">Why is there no data to report?</h4>
+          <div class="custom-controls-stacked">
+            <div class="pl-2" *ngFor="let reason of noDataReasons">
+              <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorsFields['userNodiCode']}">
+                <input type="radio" class="custom-control-input" id="reason_{{reason.reasonId}}" [value]="reason.reasonId" formControlName="userNodiCode" (change)="resetSubReasonForm()">
+                <label class="custom-control-label" for="reason_{{reason.reasonId}}">{{reason.reasonText}}</label>
+              </div>
+              <div class="ml-5 pl-4" *ngIf="nodataReasonQForm.get('userNodiCode').value  === reason.reasonId" [ngClass]="{'has-danger': errorsFields['comments']}">
+                <textarea class="w-75" formControlName="comments" placeholder="Please explain." maxlength="250" rows="5"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    <div class="card-footer">
+      <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="goBack()">
+        <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+      </button>
+      <button type="button" id="submitButton2" class="btn btn-primary float-right" (click)="continueClick(nodataReasonQForm.value)">
+        CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+      </button>
+      <div class="clearfix"></div>
+    </div>
+</form>
+<mydeq-alert-modal></mydeq-alert-modal>
+
+<ng-template #tooltip>
+  <div [innerHTML]="utils.tooltipText.noDataReason"></div>
+</ng-template>

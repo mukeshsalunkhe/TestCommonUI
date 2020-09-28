@@ -1,0 +1,26 @@
+<form class="form-horizontal" [formGroup]="reasonForm">
+  <div class="card-body pt-0">
+    <header-details (disableForm)="disableForm($event)"></header-details>
+    <h3>{{pageText.header}}</h3>
+    <h6 class="pl-3">{{pageText.sub_header}}</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center">{{error}}</div>
+    <div class="custom-controls-stacked pl-0 pt-4">
+      <div class="custom-control custom-radio cushion-bottom-5" *ngFor="let reason of reasonsList; let first=first"
+        [ngClass]="{'mt-2': !first}" [ngClass]="{'has-danger': errorFields['noDataReason.nodiIdNo']}">
+        <input type="radio" class="custom-control-input" [id]="reason.nodiIdNo" [value]="reason.nodiIdNo"
+          formControlName="nodiIdNo">
+        <label class="custom-control-label" [attr.for]="reason.nodiIdNo">{{reason.nodiDesc}}</label>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(reasonForm.value)">
+      SAVE & CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+  <div class="clearfix"></div>
+</form>

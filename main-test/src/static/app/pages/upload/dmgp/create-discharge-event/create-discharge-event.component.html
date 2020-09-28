@@ -1,0 +1,49 @@
+<form [formGroup]="createDischargeForm">
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center">{{error}}</div>
+
+  <div class="card-body pt-0">
+    <table class="table border-bottom mt-2 h5">
+      <thead>
+        <tr>
+          <th>Point of Discharge Name</th>
+          <th style="width:20%">Discharge Start Date</th>
+          <th style="width:20%">Discharge End Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="font-weight-light">
+          <td>{{model?.dischargeEvent?.outfallName}}</td>
+          <td>{{model?.dischargeEvent?.dischargeStartDate}}</td>
+          <td>{{model?.dischargeEvent?.dischargeEndDate}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3>Select the discharge activity\activities conducted in this discharge event:</h3>
+    <h6 class="pl-2">Select all that apply and click CONTINUE.</h6>
+    <section formArrayName="dischargeActivities">
+      <div *ngFor="let dischargeActivity of model.dischargeActivities;let i=index" class="pt-2">
+        <div [formGroupName]="i" class="custom-control custom-checkbox" [ngClass]="{'has-danger': haveError(dischargeActivity.code)}">
+          <input type="checkbox" class="custom-control-input" [checked]="dischargeActivity?.checkedInd == 'Y'" id="{{dischargeActivity?.code}}" value="{{dischargeActivity?.code}}" (change)="dischargeActivitiesCheck($event,i)" />
+          <label class="custom-control-label" for="{{dischargeActivity?.code}}" id="lbl_{{dischargeActivity.code}}">{{dischargeActivity?.description}}</label>
+          <div *ngIf="showSubActivities[i]" formArrayName="subDischargeActivities">
+            <div *ngFor="let subDischargeActivity of dischargeActivity?.subDischargeActivities;let j=index" class="bg-secondary p-2 ml-2">
+              <div [formGroupName]="j" class="custom-control custom-checkbox" [ngClass]="{'has-danger': haveError(dischargeActivity.code + '_' + subDischargeActivity?.code)}">
+                <input type="checkbox" class="custom-control-input" [checked]="subDischargeActivity?.checkedInd == 'Y'" id="{{subDischargeActivity?.code}}" value="{{subDischargeActivity?.code}}" (change)="subDischargeActivitiesCheck($event,i,j)" />
+                <label class="custom-control-label" for="{{subDischargeActivity?.code}}">{{subDischargeActivity?.description}}</label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="backClick()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(createDischargeForm.value)">
+      CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

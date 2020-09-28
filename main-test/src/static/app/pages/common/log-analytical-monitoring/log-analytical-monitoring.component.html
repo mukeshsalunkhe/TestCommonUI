@@ -1,0 +1,187 @@
+<form [formGroup]="pageForm">
+	<div class="card-body pt-0">
+		<div>
+			<h5 class="mb-1 font-weight-light">REPORTING PERIOD:{{model.reportingPeriodText}}</h5>
+			<h3>At this location, what are the analytical monitoring results?</h3>
+			<h6 class="font-weight-normal pl-2 mb-1">Please select your sample season and sample date. Input all sample information. Once complete click SAVE.</h6>
+			<h6 class="font-weight-normal pl-2">Enter as many samples as necessary then click CONTINUE.</h6>
+		</div>
+		<div class="px-4 py-2">
+			<table class="table table-sm mt-2 bg-secondary">
+				<tbody class="h5">
+					<tr>
+						<td class="pt-3 font-weight-normal" style="width:25%">Outfall Name/Number:</td>
+						<td class="pt-3" style="width:30%">{{model?.outfallDetails?.outfallName}}</td>
+						<td class="pt-3 font-weight-normal" style="width:15%">Receiving Water:</td>
+						<td class="pt-3" style="width:30%">{{model?.outfallDetails?.selectedWaterBodyName}}</td>
+					</tr>
+					<tr>
+						<td class="pb-3 font-weight-normal" style="width:25%">Type:</td>
+						<td class="pb-3" style="width:30%">{{model?.outfallDetails?.selectedWaterBodyTypes}}</td>
+						<td class="pb-3 font-weight-normal" style="width:15%">Source:</td>
+						<td class="pb-3" style="width:30%">{{model?.outfallDetails?.newIndicator}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="clearfix"></div>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center">{{error}}</div>
+
+		<div class="px-4 py-2" formArrayName="logAnalyticalMonitoringFormList">
+			<ngb-accordion #sampleAcc="ngbAccordion" [activeIds]="defaultOpnPanelIds">
+        <ngb-panel [id]="'sample_' + sampleIndex" type="primary" *ngFor="let logAnalyticalForm of logAnalyticalMonitoringFormList.controls; let sampleIndex=index; let last=last">
+          <ng-template ngbPanelTitle>
+            <div class="float-left h6 mb-0 text-white">
+              Season Sample : {{model?.logAnalyticalMonitoringList[sampleIndex]?.seasonSampleName}} , {{model?.logAnalyticalMonitoringList[sampleIndex]?.sampleDate}}
+            </div>
+            <div class="float-right h6 primary mb-0 text-secondary">
+              <i id="chevron-agentPanel" class="fa fa-lg" aria-hidden="true" [ngClass]="{'fa-chevron-up':sampleAcc.isExpanded('sample_' + sampleIndex),'fa-chevron-down':!sampleAcc.isExpanded('sample_' + sampleIndex)}" ></i>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div [formGroupName]="sampleIndex">
+              <div class="form-group py-2">
+                <div class="row">
+                  <label class="col-2 h5 pt-2" [attr.for]="'seasonSampleId_'+sampleIndex">Season Sample:</label>
+                  <div class="col-4" [ngClass]="{'has-danger': error_fields['analyticalMonitoringSample.seasonSampleId_'+sampleIndex]}">
+                    <select class="custom-select" formControlName="seasonSampleId" id="seasonSampleId_{{sampleIndex}}" (change)="onSeasonSelect(sampleIndex, $event.target.value)"> <!-- [(ngModel)]="logAnalyticalMonitoringList[sampleIndex].seasonSampleId"-->
+                      <option value="-1">SELECT ONE</option>
+                      <option *ngFor="let season of model.seasonSampleList" value={{season.code}}>{{season.value}}</option>
+                    </select>
+                  </div>
+                  <label class="col-auto h5 pt-2" [attr.for]="'sampleDate_'+sampleIndex">Sample Date: </label>
+                  <div class="col-3 input-group" [ngClass]="{'has-danger': error_fields['analyticalMonitoringSample.sampleDate_' + sampleIndex]}">
+                    <div class="input-group-prepend">
+                      <button id="pickupDateBtn" class="btn btn-primary" (click)="sampleDateDP.toggle()" type="button" [disabled]="logAnalyticalForm.get('sampleDate').disabled"><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <input id="pickupDate" type="text" class="form-control" maxlength="10" formControlName="sampleDate" ngbDatepicker #sampleDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate" (dateSelect)="updateSampleDate($event, sampleIndex)" placement="bottom" />
+                  </div>
+                  <div class="col-auto pr-0 float-right">
+                    <div *ngIf="logAnalyticalForm.get('seasonSampleId').disabled" class="h5 font-weight-light text-primary">
+                      <a [id]="'editLogSample_' + sampleIndex"  href="javascript:void(0)" (click)="enableEditLogMonit(sampleIndex)">EDIT</a>
+                    </div>
+                  </div>
+                  <div class="col-auto pr-0 float-right" *ngIf="logAnalyticalForm.get('seasonSampleId').enabled && logAnalyticalMonitoringFormList.length !== 1">
+                    <a href="javascript:void(0)" (click)="enableEditLogMonit(sampleIndex)" container="body" title="Delete Sample" [id]="'deleteLogSamplePopover_' + sampleIndex" [ngbPopover]="deleteLogSampleConfirm">
+                      <i class="fa fa-trash-alt fa-lg text-primary cushion-top-5 cursor-pointer"></i>
+                    </a>
+                    <ng-template #deleteLogSampleConfirm>
+                        <div [id]="'deleteLogSamplePopover_'+sampleIndex">
+                          <h6>Are you sure you want to delete?</h6>
+                          <div class="w-100 d-block clearfix">
+                            <button type="button" class="btn btn-danger btn-sm float-left" [id]="'delete_logsample_Y_'+sampleIndex" (click)="removeLogSample(sampleIndex,'Y')">YES</button>
+                            <button type="button" class="btn btn-primary btn-sm float-right" [id]="'delete_logsample_N_'+sampleIndex" (click)="removeLogSample(sampleIndex,'N')">NO</button>
+                            <div class="clearfix"></div>
+                          </div>
+                        </div>
+                      </ng-template>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <table id="lineItemsList" class="table table-controls h5 mb-0" [mfData]="pageDisplayRows[sampleIndex].controls" #mf1="mfDataTable" [mfRowsOnPage]="15" [isDynamicTable]="true" (pagenumber)="handlePageChange(sampleIndex ,$event)" (startSliceIndex)="setNewRowcounter(sampleIndex,$event)">
+                  <thead>
+                    <tr>
+                      <th>Parameter</th>
+                      <th>Value</th>
+                      <th>Unit</th>
+                      <th>Hardness</th>
+                      <th>pH</th>
+                      <th>Temperature</th>
+                      <th>No Discharge Reason</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="ms4ExcelSheetCtrls">
+                    <tr *ngFor="let row of mf1.data; let row_id=index;" [id]="row_id" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].parameterId_'+sampleIndex]}" [formGroupName]="getRowId(sampleIndex,row_id)">
+                      <td style="width:18%" class="cushion-left-0 cushion-right-10">
+                        <select class="custom-select" formControlName="parameterId" (change)="onParameterSelect(sampleIndex, $event.target.value,getRowId(sampleIndex,row_id),pageForm.value)">
+                          <option VALUE="-1">SELECT ONE</option>
+                          <option *ngFor="let parameterDetail of model.optionalMs4LogSampleDatas" value="{{parameterDetail.parameterId}}">{{parameterDetail.parameterName}}</option>
+                        </select>
+                      </td>
+                      <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].sampleValue_'+sampleIndex]}">
+                        <input tabindex="getTabIndex(sampleIndex)" type="text" formControlName="sampleValue" class="form-control" maxlength="13" />
+                        </td>
+                        <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].unit_'+sampleIndex]}">
+                          <input tabindex="getTabIndex(sampleIndex)" formControlName="unit" type="text" class="form-control" />
+                        </td>
+                        <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].hardness_'+sampleIndex]}">
+                          <input tabindex="getTabIndex(sampleIndex)" formControlName="hardness" type="text" class="form-control" maxlength="13" />
+                        </td>
+                        <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].ph_'+sampleIndex]}">
+                          <input tabindex="getTabIndex(sampleIndex)" formControlName="ph" maxlength="5" type="text" class="form-control" />
+                        </td>
+                        <td style="width:10%" class="cushion-left-0 pr-3" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].temperature_'+sampleIndex]}">
+                          <input tabindex="getTabIndex(sampleIndex)" formControlName="temperature" maxlength="7" type="text" class="form-control"/>
+                        </td>
+                        <td style="width:25%" [ngClass]="{'has-danger':error_fields['analyticalMonitoringSample.ms4LogSampleDatas['+getRowId(sampleIndex,row_id)+'].parameterNodiCode_'+sampleIndex]}">
+                          <select class="custom-select " formControlName="parameterNodiCode">
+                            <option VALUE="-1">SELECT ONE</option>
+                            <option *ngFor="let noDiDetails of model.parameterNodiCodes" value="{{noDiDetails.reasonId}}">{{noDiDetails.reasonText}}</option>
+                          </select>
+                        </td>
+                        <td style="width:15%" class="h5">
+                          <div class="pt-2" *ngIf="row.get('optionalIndicator').value === 'Y' && logAnalyticalForm.get('seasonSampleId').enabled">
+                            <a href="javascript:void(0)" [ngbPopover]="deleteSample" container="body" id="deleteSample{{sampleIndex}}_{{row_id}}" tabindex="getTabIndex()"> <i class="pl-2 fa fa-trash-alt text-primary"></i></a>
+                            <ng-template #deleteSample>
+                              <h6>Are you sure you want to delete?</h6>
+                              <div class="w-100 d-block clearfix">
+                                <button type="button" class="btn btn-primary btn-sm float-left" [id]="'delete_line_item_Y_'+sampleIndex+'_'+row_id" (click)="deleteLineItem(sampleIndex,'Y',getRowId(sampleIndex,row_id),model.logAnalyticalMonitoringList[sampleIndex]?.ms4LogSampleDatas[row_id]?.idno);">YES</button>
+                                <button type="button" class="btn btn-danger  btn-sm float-right" [id]="'delete_line_item_N_'+sampleIndex+'_'+row_id" (click)="deleteLineItem(sampleIndex, 'N',getRowId(sampleIndex,row_id), model.logAnalyticalMonitoringList[sampleIndex]?.ms4LogSampleDatas[row_id]?.idno);">NO</button>
+                              </div>
+                            </ng-template>
+                          </div>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot *ngIf="mf1.data.length > 15">
+                      <tr>
+                        <td colspan="4">
+                          <div class="cushion-bottom-0 buffer-bottom-0">
+                            <mfBootstrapPaginator [errorPages]="errorRowNos[sampleIndex]"></mfBootstrapPaginator>
+                          </div>
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+                <div *ngIf="logAnalyticalForm.get('seasonSampleId').enabled" class="w-100 d-block pt-2">
+                  <a class="float-right h5" href="javascript:void(0)" (click)="addNewRowForLog(sampleIndex)">
+                    <i class="fa fa-lg  fa-plus-square align-vertical"></i>
+                    <span class="pl-2 pt-1">Add Row</span>
+                  </a>
+                  <div class="clearfix"></div>					
+                </div>
+              </div>
+              <div>
+              <section class="pt-5" *ngIf="logAnalyticalForm.get('seasonSampleId').enabled">
+                <button type="button"class="btn btn-primary float-right  mt-2" (click)="logAnalyticalMonitoringLog(sampleIndex)">
+                  SAVE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+                </button>
+                <div class="clearfix"></div>
+              </section>
+            </div>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion> 
+    </div>
+    
+    <div class="w-100 d-block pr-4">
+      <button class="btn btn-primary float-right" (click)="addMoreLogAnalyticalMonitoring()" [disabled]="disableContinue">
+        <i class="fa fa-plus fa-lg"></i>
+        <span class="pl-2 pt-1">ADD SAMPLE</span>
+      </button>
+      <div class="clearfix"></div>					
+    </div>
+</div>
+<div class="card-footer">
+  <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="goBack()">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+  </button>
+  <button type="button" [disabled]="disableContinue" id="submitButton2" class="btn btn-primary float-right" (click)="continue(pageForm.value)">
+    CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>
+</form>

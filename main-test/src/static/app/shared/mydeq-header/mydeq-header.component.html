@@ -1,0 +1,26 @@
+<nav class="navbar bg-secondary header-nav" role="navigation">
+  <div class="container">
+    <a class="navbar-brand float-left" href="/mydeq/my-stuff">
+            <img class="img-responsive" style="max-height:50px;" src="https://static.azdeq.gov/mydeq/img/logo-large.png" alt="myDEQ" />
+    </a>
+    <div class="float-right d-none d-lg-block" id="navbarNavDropdown">
+        <ul class="nav justify-content-end">
+        <li class="nav-item"><div id="userNameLabel"> <p class="mb-0 divider-vertical"> {{userDetails?.first_name}} {{userDetails?.last_name}} </p> </div></li>
+        <li class="nav-item"><a class="nav-link" href="javascript:void(0)" (click)="logoutMe()"><u>LOGOUT</u></a></li>
+        <li class="nav-item" id="parentmyStuffId"><a class="nav-link" href="/mydeq/my-stuff" >mySTUFF</a></li>
+        <li class="nav-item text-primary" id="mySETTINGS"><a class="nav-link" href="/mydeq-settings/home" title="myDEQ Account Settings">mySETTINGS</a></li>
+        </ul>
+    </div>
+
+    <div class="d-block d-md-none" ngbDropdown  placement="bottom-right">
+        <button class="navbar-toggler" type="button" aria-label="Toggle navigation" ngbDropdownToggle>
+        <span class="navbar-toggler-icon"><i class="fa fa-bars"></i></span>
+        </button>
+        <ul class="bg-secondary px-2" ngbDropdownMenu >
+        <li class="nav-item"><a class="nav-link py-2" href="javascript:void(0)" (click)="logoutMe()"><u>LOGOUT</u></a></li>
+        <li class="nav-item h-100 active" id="parentmyStuffId"><a class="nav-link py-2" href="/mydeq/my-stuff">mySTUFF</a></li>
+        <li class="nav-item h-100" id="mySETTINGS"><a class="nav-link py-2" href="/mydeq-settings/home" title="myDEQ Account Settings">mySETTINGS</a></li>
+        </ul>
+    </div>
+  </div>
+</nav>

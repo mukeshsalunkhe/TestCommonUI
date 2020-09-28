@@ -1,0 +1,36 @@
+<div class="card-body">
+    <header-details [hideEditBanner]="true"></header-details>
+    <h3 *ngIf="!isZeroDeficiencies">Potential deficiencies have been identified on your DMR. Click DOWNLOAD REPORT to review.
+    </h3>
+    <h3 *ngIf="isZeroDeficiencies">Your DMR has been checked for potential deficiencies.</h3>
+    <h6 class="pl-3" *ngIf="isZeroDeficiencies">To submit this DMR, click SAVE & CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="pt-3" *ngIf="isZeroDeficiencies; else hasDeficiencies">
+        <div class="alert alert-warning h4 pl-3 font-weight-light clearfix " role="alert">
+            <i class="fas fa-check fa-lg text-success pr-3"></i>
+            <span>No Potential Deficiencies Detected</span>
+        </div>
+    </div>
+
+    <ng-template #hasDeficiencies>
+        <div class="alert alert-warning h4 pl-3 mt-5 font-weight-light clearfix" role="alert">
+            <i class="warning fas fa-2x fa-exclamation-triangle text-danger" style="margin-top: -5px;" aria-hidden="true"></i>
+            <span> {{model?.noOfDeficiency}} DEFICIENCIES DETECTED</span>
+        </div>
+        <button type="button" class="btn btn-primary ml-3" (click)="getDeficiencyReport()">
+        DOWNLOAD REPORT <span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+      </button>
+        <h4 class="w-75 font-weight-light pt-4">Revise the DMR by clicking BACK or click SAVE & CONTINUE to submit the DMR as-is.
+        </h4>
+    </ng-template>
+
+</div>
+<div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue()">
+      SAVE & CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+</div>

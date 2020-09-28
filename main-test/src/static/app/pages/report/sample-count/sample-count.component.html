@@ -1,0 +1,143 @@
+<form class="form-horizontal" [formGroup]="pageForm">
+  <div class="card-body">
+    <header-details (disableForm)="disableForm($event)"></header-details>
+    <h3>How many samples have been taken for each outfall?</h3>
+    <h6 *ngIf = "utils.module === 'msgp_19'" class="pl-3">Review the following and adjust the number of samples, if needed. Note that at least one sample is
+      required and listed by default.</h6>
+    <h6 *ngIf = "utils.module === 'cgp20'" class="pl-3">Review the following and adjust the number of samples, if needed. Note that two samples are required per wet season and listed by default.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="px-3 py-4">
+      <div class="input-group search">
+        <div class="input-group-prepend">
+          <span class="input-group-text bg-white pt-1 pr-2 border-primary border-right-0"><i
+              class="fas fa-search fa-lg text-primary pt-1 pt-1"></i></span>
+        </div>
+        <input type="search" class="form-control bg-white border-primary" style="border-left: 0px; height: auto;"
+          placeholder="Search for Outfall or Parameter" #searchField />
+        <div class="input-group-append">
+          <button id="searchBtn" class="btn btn-primary pl-2" type="submit" (click)="search(searchField.value)">SEARCH
+            <i class="fas fa-chevron-right pl-2"></i>
+          </button>
+        </div>
+      </div>
+      <h6>Note: If you try to search by an outfall or parameter that is not listed and yields no results, you will need to clear the search field and click SEARCH again to refresh the page.</h6>
+      <div class="clearfix"></div>
+
+      <table *ngIf="loadOutfall && outfallSampleList && outfallSampleList.length > 0" [mfData]="outfallSampleList"
+        #mfSample="mfDataTable" class="table table-striped border-bottom mt-2 h5" [mfRowsOnPage]="15"
+        mfSortBy="outfallName" mfSortOrder="desc">
+        <thead>
+          <tr>
+            <th>
+              <mfDefaultSorter by="outfallName">Outfall</mfDefaultSorter>
+            </th>
+            <th>
+              <mfDefaultSorter by="parameterName">Parameter</mfDefaultSorter>
+            </th>
+            <th *ngIf = "utils.module === 'msgp_19'" style="width:20%">Accelerated Monitoring</th>
+            <th style="width:20%"># of Samples</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="outfallSampleCountList">
+          <tr class="font-weight-light" *ngFor="let outfall of mfSample.data;let i=index">
+            <td>{{outfall?.outfallName}}</td>
+            <td>{{outfall?.parameterName}}</td>
+            <td *ngIf = "utils.module === 'msgp_19'" ><i *ngIf="outfall.acclrMonitYN === 'Y'" class="fas fa-lg fa-exclamation-triangle text-warning px-2"
+                aria-hidden="true"></i>
+              {{outfall?.acclrMonitYN === 'Y' ? 'ACTIVE' : ''}}</td>
+            <td class="py-1"
+              [ngClass]="{'has-danger': errorFields['outfallSampleCountList[' + outfall.index +'].sampleCount']}"
+              [formGroupName]="outfall.index">
+              <select [id]="'sampleCount_' + outfall.index" class="custom-select" formControlName="sampleCount">
+                <option *ngFor="let sampleCount of sampleCountArray" value={{sampleCount}}>{{sampleCount}}</option>
+              </select>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot *ngIf="outfallSampleList && outfallSampleList.length > 15">
+          <tr>
+            <td colspan="4">
+              <div class="cushion-bottom-0 buffer-bottom-0">
+                <mfBootstrapPaginator></mfBootstrapPaginator>
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div>
+    <h3>Did you take samples for any additional parameters that need to be included in the DMR?</h3>
+    <h6 *ngIf = "utils.module === 'msgp_19'"  class="pl-3">Select one an click SAVE & CONTINUE.</h6>
+    <h6 *ngIf = "utils.module === 'cgp20'" class="pl-3">Select one, provide any additional information and click SAVE & CONTINUE.</h6>
+
+    <div class="pl-0 py-4">
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['booleanAnswer']}">
+        <input class="custom-control-input" type="radio" name="booleanAnswer" formControlName="booleanAnswer" value="Y"
+          id="booleanAnswerY">
+        <label class="custom-control-label" for="booleanAnswerY">Yes</label>
+      </div>
+      <div *ngIf="pageForm.get('booleanAnswer').value === 'Y'" class="bg-secondary p-3 mx-5"
+        formArrayName="optionalParamCountList">
+        <h4>Select the outfall and the parameter from the lists to include them in the DMR spreadsheet.</h4>
+        <table class="table border-bottom mt-2 h6">
+          <thead>
+            <tr>
+              <th>Outfall</th>
+              <th>Parameter</th>
+              <th style="width:15%"># of Samples</th>
+              <th class="no_bar" style="width:40px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="font-weight-light" [formGroupName]="i"
+              *ngFor="let outfall of optionalParamCountList;let i=index">
+              <td [ngClass]="{'has-danger': errorFields['outfallSampleCountList[' + i +'].outfallId']}">
+                <custom-dropdown [itemList]="outfallList" formControlName="outfallId" [code]="'outfallId'"
+                  [description]="'outfallName'" [isSearchable]="false" [defaultText]="'Select One'">
+                </custom-dropdown>
+              </td>
+              <td>
+                <custom-dropdown [itemList]="parameterList" formControlName="parameterId" [code]="'parameterId'"
+                  [description]="'parameterName'" [isSearchable]="true" [defaultText]="'Select One'">
+                </custom-dropdown>
+              </td>
+              <td [ngClass]="{'has-danger': errorFields['outfallSampleCountList[' + i +'].sampleCount']}">
+                <select [id]="'OptSampleCount_' + i" class="custom-select" formControlName="sampleCount">
+                  <option *ngFor="let sampleCount of sampleCountArray1" value={{sampleCount}}>{{sampleCount}}</option>
+                </select>
+              </td>
+              <td *ngIf = "showDelete" ><a [id]="'outfallDelete_' + outfall.index" href="javascript:void(0)" title="Delete Outfall"
+                  (click)="deleteOutfall(i)"><i class="fas fa-trash-alt fa-lg pt-2"></i></a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="offset-9 mt-2 text-right" *ngIf="pageForm.get('booleanAnswer').enabled">
+          <div class="cursor-pointer pr-0 h5" (click)="addOutFallSample()">
+            <i class="fa fa-lg  fa-plus-square text-primary right"></i>
+            <span class="pl-2">ADD MORE</span>
+          </div>
+        </div>
+      </div>
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['booleanAnswer']}">
+        <input class="custom-control-input" type="radio" name="booleanAnswer" formControlName="booleanAnswer" value="N"
+          id="booleanAnswerN">
+        <label class="custom-control-label" for="booleanAnswerN">No</label>
+      </div>
+    </div>
+  </div>
+
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="backBtn" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+    </button>
+    <button type="button" id="continueBtn" class="btn btn-primary float-right"
+      (click)="continue(pageForm.getRawValue())">
+      SAVE & CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

@@ -1,0 +1,17 @@
+<div *ngIf="showAlert" class="modal-backdrop fade show"></div>
+<div *ngIf="showAlert" class="modal fade show" id="myModal" role="dialog">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header mx-3 pl-0">
+				<h2 class="modal-title font-weight-bold text-primary">{{alertObj.title}}</h2>
+			</div>
+			<div class="modal-body p-3">
+				<h3 class="mt-0">{{alertObj.msg}}</h3>
+			</div>
+			<div class="modal-footer">
+				<button type="button" *ngIf="alertObj?.leftButtonText" class="btn btn-primary float-left" (click)="closeErrorMsg()"><span class="arrow left"> <i class="fa fa-chevron-left"></i></span>{{alertObj?.leftButtonText}}</button>
+				<button type="button" *ngIf="alertObj?.mainButtonText" class="btn btn-primary float-right" (click)="hideErrorMsg()">{{alertObj.mainButtonText}}<span class="arrow right"> <i class="fa fa-chevron-right"></i></span></button>
+			</div>
+		</div>
+	</div>
+</div>

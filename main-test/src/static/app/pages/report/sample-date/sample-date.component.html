@@ -1,0 +1,35 @@
+<form [formGroup]="pageForm">
+  <div class="card-body pt-0">
+    <header-details (disableForm)="disableForm($event)" [hideWetSeason]="true"></header-details>
+    <h3>{{pageText?.header}}</h3>
+    <h6 class="pl-3">{{pageText?.sub_header}}</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+
+    <div class="row pl-3 pt-5 no-gutters">
+      <div class="col-auto pt-1 h5 pr-3">{{pageText?.lbl_start_date}}</div>
+      <div class="col-sm-4 col-lg-2 input-group" [ngClass]="{'has-danger': error_fields['sampleStartDate']}">
+        <div class="input-group-prepend">
+          <button id="sampleStartDateBtn" class="btn btn-primary" (click)="sampleStartDateDP.toggle()" type="button"><i
+              class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+        </div>
+        <input id="sampleStartDate" type="text" class="form-control" maxlength="10" formControlName="sampleStartDate"
+          ngbDatepicker #sampleStartDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate"
+          (dateSelect)="showWetSeason($event)">
+      </div>
+    </div>
+    <div class="p-3 bg-secondary mt-4" *ngIf="wetSeason">
+      <h4 class="mb-0">The DMR will be associated with this wet season: ({{wetSeason}}) </h4>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="backClick()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(pageForm.value)">
+      SAVE & CONTINUE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>
+
+<mydeq-alert-modal></mydeq-alert-modal>

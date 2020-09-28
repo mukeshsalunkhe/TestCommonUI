@@ -1,0 +1,155 @@
+<form [formGroup]="pageForm">
+  <div class="card-body pt-0">
+    <h5 class="mb-2 font-weight-light">REPORTING PERIOD:{{model.reportingPeriodText}}</h5>
+    <h3>At this location, what are the visual monitoring results?</h3>
+    <h6 class="font-weight-normal pl-2">Please select your sample season and sample date. Input all sample information. Once complete click SAVE.</h6>
+    <h6 class="font-weight-normal pl-2 pb-2">Enter as many samples as necessary then click CONTINUE.</h6>
+    <div class="px-4 py-2">
+      <table class="table table-sm mt-2 bg-secondary">
+        <tbody class="h5">
+          <tr>
+            <td class="pt-3 font-weight-normal" style="width:25%">Outfall Name/Number:</td>
+            <td class="pt-3" style="width:30%">{{model?.outfallDetails?.outfallName}}</td>
+            <td class="pt-3 font-weight-normal" style="width:15%">Receiving Water:</td>
+            <td class="pt-3" style="width:30%">{{model?.outfallDetails?.selectedWaterBodyName}}</td>
+          </tr>
+          <tr>
+            <td class="pb-3 font-weight-normal" style="width:25%">Type:</td>
+            <td class="pb-3" style="width:30%">{{model?.outfallDetails?.selectedWaterBodyTypes}}</td>
+            <td class="pb-3 font-weight-normal" style="width:15%">Source:</td>
+            <td class="pb-3" style="width:30%">{{model?.outfallDetails?.newIndicator}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="clearfix"></div>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="px-4 py-2" formArrayName="logVisualMonitoringFormList">
+      <ngb-accordion #sampleAcc="ngbAccordion" [activeIds]="defaultOpnPanelIds">
+        <ngb-panel [id]="'sample_' + i" type="primary" *ngFor="let logMonitForm of logVisualMonitoringFormList.controls; let i=index; let last=last">
+          <ng-template ngbPanelTitle>
+            <div class="float-left h6 mb-0 text-white">
+              Season Sample: {{model.logVisualMonitoringList[i].seasonSampleName}}, {{model.logVisualMonitoringList[i].sampleDate}}
+            </div>
+            <div class="float-right h6 primary mb-0 text-secondary">
+              <i id="chevron-agentPanel" class="fa fa-lg" aria-hidden="true" [ngClass]="{'fa-chevron-up':sampleAcc.isExpanded('sample_' + i),'fa-chevron-down':!sampleAcc.isExpanded('sample_' + i)}"></i>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent>
+            <div [formGroupName]="i">
+              <div class="form-group">
+                <div class="form-row">
+                  <label class="col-2 h5 pt-1" [attr.for]="'seasonSampleId_'+i">Season Sample:</label>
+                  <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.seasonSampleId_'+i]}">
+                    <select class="custom-select" formControlName="seasonSampleId" id="seasonSampleId_{{i}}" (change)="onSeasonSelect(i, $event.target.value)">
+                      <option value="-1">Select One</option>
+                      <option *ngFor="let season of model.seasonSampleList" value={{season.code}}>{{season.value}}</option>
+                    </select>
+                  </div>    
+                  <label class="col-2 pt-1 h5" [attr.for]="'sampleDate_'+i">Sample Date: </label>
+                  <div class="input-group col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleDate_' + i]}">
+                    <div class="input-group-prepend">
+                      <button id="sampleDateBtn" class="btn btn-primary btn-sm" (click)="sampleEnteredDateDP.toggle()" type="button" [disabled]="logMonitForm.get('sampleDate').disabled" (dateSelect)="updateSampleDate($event, i)"><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+                    </div>
+                    <input id="pickupDate" type="text" class="form-control" maxlength="10" formControlName="sampleDate" ngbDatepicker #sampleEnteredDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate" placement="bottom" />
+                  </div>
+                  <div class="ml-auto col-auto" *ngIf="logMonitForm.get('seasonSampleId').disabled">
+                    <a href="javascript:void(0)" (click)="enableEditLogMonit(i)">EDIT</a>
+                  </div>
+                  <div *ngIf="logMonitForm.get('seasonSampleId').enabled && logVisualMonitoringFormList.length !== 1" class="col-auto ml-auto">
+                    <i class="left fa fa-trash-alt fa-lg text-primary cushion-top-0  cursor-pointer" title="Delete Sample" aria-hidden="true" [id]="'deleteLogSamplePopovers_' + i" container="body" [ngbPopover]="deleteLogSampleConfirm"></i>
+                  </div>
+                  <ng-template #deleteLogSampleConfirm>
+                    <h6>Are you sure you want to delete?</h6>
+                    <div class="w-100 d-block clearfix">
+                      <button type="button" class="btn btn-danger btn-sm float-left" [id]="'delete_logsample_Y_'+i" (click)="removeLogSample(i,'Y')">YES</button>
+                      <button type="button" class="btn btn-primary btn-sm float-right" [id]="'delete_logsample_N_'+i" (click)="removeLogSample(i,'N')">NO</button>
+                      <div class="clearfix"></div>
+                    </div>
+                  </ng-template>
+                </div>
+              </div>
+              <div class="form-row pb-2">
+                <label class="col-auto h5 pt-1 pr-0" [attr.for]="'sampleNodiCodeId_'+i">No Discharge Reason:</label>
+                <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleNodiCodeId_'+i]}">
+                  <select class="custom-select" (change)="onParameterSelect(i, $event.target.value)" formControlName="sampleNodiCodeId" id="sampleNodiCodeId_{{i}}">
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let nodiCode of model.parameterNodiCodes" value={{nodiCode.reasonId}}>{{nodiCode.reasonText}}</option>
+                  </select>
+                </div>
+                <label class="col-2 h5 pt-1" [attr.for]="'sampleColorCodeId_'+i">Color: </label>
+                <div class="col-sm-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleColorCodeId_'+i]}">
+                  <select class="custom-select" formControlName="sampleColorCodeId" id="sampleColorCodeId_{{i}}">
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let color of model.colorList" value={{color.code}}>{{color.value}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row pb-2">
+                <label class="col-2 h5 pt-1" [attr.for]="'sampleSheenId_'+i">Sheen:</label>
+                <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleSheenId_'+i]}">
+                  <select class="custom-select" formControlName="sampleSheenId" id="sampleSheenId_{{i}}">
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let sheen of model.sheenList" value={{sheen.code}}>{{sheen.value}}</option>
+                  </select>
+                </div>
+                <label class="col-2 h5 pt-1" [attr.for]="'sampleSolidId_'+i">Solid:</label>
+                <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleSolidId_'+i]}">
+                  <select class="custom-select" formControlName="sampleSolidId" id="sampleSolidId_{{i}}">
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let solid of model.solidList" value={{solid.code}}>{{solid.value}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row pb-2">
+                <label class="col-2 h5 pt-1" [attr.for]="'sampleFoamId_'+i">Foam:</label>
+                <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleFoamId_'+i]}">
+                  <select class="custom-select" formControlName="sampleFoamId" id="sampleFoamId_{{i}}"> 
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let foam of model.foamList" value={{foam.code}}>{{foam.value}}</option>
+                  </select>
+                </div>
+                <label class="col-2 h5 pt-1" [attr.for]="'sampleOdorId_'+i">Odor: </label>
+                <div class="col-3" [ngClass]="{'has-danger': error_fields['visualMonitoringSample.sampleOdorId_'+i]}">
+                  <select class="custom-select" formControlName="sampleOdorId" id="sampleOdorId_{{i}}">
+                    <option value="-1">Select One</option>
+                    <option *ngFor="let odor of model.odorList" value={{odor.code}}>{{odor.value}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row pb-2">
+                <label class="col-2 h5 pt-1" [attr.for]="'other_'+i">Other:</label>
+                <div class="col-6" [ngClass]="{'has-danger':error_fields['visualMonitoringSample.other_'+i]}">
+                  <input class="form-control" type="text" formControlName="other" maxlength="1500"/>
+                </div>
+              </div>
+            </div>
+            <section class="mt-2" *ngIf="logMonitForm.get('seasonSampleId').enabled">
+              <button type="button" id="saveButton_{{i}}" class="btn btn-primary float-right  mt-2" (click)="logVisualMonitoringLog(logMonitForm.value, i)">
+                SAVE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+              </button>
+              <div class="clearfix"></div>
+            </section>
+            <div class="clearfix"></div>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+    </div>
+    <div class="w-100 d-block pr-4">
+      <button class="btn btn-primary float-right" (click)="addMoreLogVisualMonitoring()" [disabled]="disableContinue">
+        <i class="fa fa-plus fa-lg"></i>
+        <span class="pl-2 pt-1">ADD SAMPLE</span>
+      </button>
+      <div class="clearfix"></div>					
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+    </button>
+    <button type="button" [disabled]="disableContinue" id="submitButton2" class="btn btn-primary float-right" (click)="continue(pageForm.value)">
+      CONTINUE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

@@ -1,0 +1,48 @@
+<form class="form-horizontal" [formGroup]="errorReportForm">
+  <div class="card-body">
+    <div *ngIf="utils.module === 'msgp_19' || utils.module === 'cgp20'" >
+      <header-details [hideEditBanner]="true"></header-details>
+    </div>
+    <h3>Error Report</h3>
+    <h6 *ngIf = "utils.module === 'cgp20'">Please review the following error report and make appropriate changes, if critical errors are identified. Critical errors will cause this report to be rejected. You may fix the error by adjusting your spreadsheet, selecting “Re-upload my spreadsheet” and/or click SAVE & CONTINUE, if no critical errors were found.</h6>
+    <h6 *ngIf = "utils.module !== 'cgp20'" class="pl-2">Please review the Error Report below and make appropriate changes if critical errors are
+      identified. Critical errors will cause this report to be rejected. You may fix your errors and re-upload or click
+      CONTINUE if no critical errors where found.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="pl-3 py-3" style="width: 18%;">
+      <div class="mydeq-confirmation-document pt-1 pl-5" (click)="getErrorReport()">
+        <div class="mydeq-confirmation-document-type ml-2">
+          <div class="mydeq-confirmation-document-icon">PDF</div>
+          <div class="mydeq-confirmation-document-type-label font-weight-normal text-center text-primary pt-2">Error
+            Report</div>
+        </div>
+        <div class="mydeq-confirmation-document-message ml-2 py-4 h-100">
+          <span class="font-weight-normal">Click to</span><br> <span class="font-weight-bold">SAVE / PRINT</span><br>
+        </div>
+      </div>
+    </div>
+    <hr />
+    <div class="pl-3 pt-3">
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['reupload']}">
+        <input type="radio" class="custom-control-input" id="reuploadY" formControlName="reupload" name="reupload"
+          value="Y" />
+        <label class="custom-control-label" for="reuploadY">Re-upload my spreadsheet</label>
+      </div>
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['reupload']}">
+        <input type="radio" class="custom-control-input" id="reuploadN" formControlName="reupload" name="reupload"
+          value="N" />
+        <label class="custom-control-label" for="reuploadN">Return to mySTUFF</label>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(errorReportForm.value)">
+      CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>
+<mydeq-alert-modal></mydeq-alert-modal>

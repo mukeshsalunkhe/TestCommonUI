@@ -1,0 +1,19 @@
+<div *ngIf="timeoutMessageIsVisible" class="modal-backdrop show" style="z-index: 1055;"></div>
+<div *ngIf="timeoutMessageIsVisible" class="modal show fade" id="sessionTimeOut" role="dialog" style="z-index: 1060;">
+	<div class="modal-dialog modal-lg modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header mx-3 pl-0">
+				<h2 class="modal-title text-primary font-weight-bold" *ngIf="sessionTimedOut">ALERT: SESSION HAS ENDED</h2>
+				<h2 class="modal-title text-primary font-weight-bold" *ngIf="!sessionTimedOut">ALERT: SESSION TIMEOUT WARNING</h2>
+			</div>
+			<div class="modal-body p-3">
+				<h3 class="mt-0" *ngIf="sessionTimedOut">Your session has ended due to no activity on this screen. Please re-login. You will need to restart a new session after login, as currently there is no SAVE option in myDEQ.</h3>
+				<h3 class="mt-0" *ngIf="!sessionTimedOut">Your session will timeout in 2 min, due to no activity on this screen. If you wish to continue your session please click CONTINUE to keep your session active.</h3>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary float-right" (click)="endSession()" *ngIf="sessionTimedOut">EXIT <span class="arrow right"> <i class="fa fa-chevron-right"></i></span></button>
+				<button type="button" class="btn btn-primary float-right" (click)="continueSession()" *ngIf="!sessionTimedOut">CONTINUE <span class="arrow right"> <i class="fa fa-chevron-right"></i></span></button>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,55 @@
+<div class="card-body pt-0">
+  <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+	<section class="mydeq-summary">
+		<h3>Summary</h3>
+		<h6 class="font-weight-normal pl-2">Please review and click EDIT to modify. Then click CONTINUE.</h6>
+		<div class="pt-2 px-2 table-responsive">
+			<table class="table table-striped">
+				<tbody class="h5">
+           <tr>
+              <td width="35%">
+                <div class="cushion-left-10">Place</div>
+              </td>
+              <td class="font-weight-light" colspan="3">
+                 <p>{{utils.placeName}}</p>
+                 <p>{{utils.placeAddress}}</p>
+              </td>
+           </tr>
+           <tr>
+              <td width="25%">
+                <div class="cushion-left-10">Reporting Period</div>
+              </td>
+              <td class="font-weight-light" colspan="2">
+                 {{reportingPeriod.selectedCycleText}}
+              </td>
+              <td class="pr-3 text-right">
+                <a href="javascript:void(0)" class="text-primary" (click)="editDetails('reporting_period')">EDIT</a>
+              </td>
+           </tr>
+           <tr>
+              <td width="25%">
+                <div class="cushion-left-10">Why is there no data to report?</div>
+              </td>
+              <td class="font-weight-light" colspan="2">
+                 <div>{{noDataReason.selectedReasonText}}</div>
+                 <div>Comments: {{noDataReason.selectedReasonComment}}</div>
+              </td>
+              
+              <td class="pr-3 text-right">
+                <a href="javascript:void(0)" class="text-primary" (click)="editDetails('no_data_reason')">EDIT</a>
+              </td>
+           </tr>
+				</tbody>
+			</table>
+		</div>
+  </section>
+</div>
+<div class="card-footer">
+  <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+  </button>
+  <button type="button" class="btn btn-primary float-right" (click)="continue()">
+    CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>

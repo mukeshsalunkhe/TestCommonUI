@@ -1,0 +1,111 @@
+<form [formGroup]="dischargeEventForm">
+<div class="card-body pt-0">
+  <div class="table-responsive" *ngIf="showSavedEventSection">
+    <h3>Saved discharge event result logs:</h3>
+    <h6 class="pl-2">Select the event(s) you want to submit, and click CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <table class="table h6">
+      <thead>
+        <tr style="border-bottom: 2px #d2c1ab solid;">
+          <td class="radio-column no-bar" style="width: 7%;"></td>
+          <td>Discharge Event ID</td>
+          <td>Point of Discharge Name</td>
+          <td>Discharge Start Date</td>
+          <td>Discharge End Date</td>
+          <td style="width: 10%">Status</td>
+          <td style="width: 10%">View</td>
+        </tr>
+      </thead>
+      <tbody formArrayName="eventListArray" class="font-weight-light">
+        <tr *ngFor="let eventInfo of eventListArray.controls; let i=index" [ngClass]="{evenRow:isEvenRow(i),oddRow:!isEvenRow(i)}" style="padding:1px !important">
+          <td class="py-1 radio-column" [formGroupName]="i">
+            <div class="custom-control custom-checkbox custom-checkbox-sm" [ngClass]="{'has-danger': error_fields['selectedEventList']}">
+              <input class="custom-control-input" type="checkbox" id="{{savedEventList[i]?.eventId}}" formControlName="checkEventId" value="{{savedEventList[i]?.code}}" />
+              <label for="{{savedEventList[i]?.eventId}}" style="color:#faefdb;font-size: 0px;"  class="custom-control-label"
+                id="lbl_{{savedEventList[i]?.eventId}}"
+                >{{savedEventList[i]?.eventId}}</label>
+            </div>
+          </td>
+          <td>{{savedEventList[i].eventId}}</td>
+          <td> {{savedEventList[i].outfallName}}</td>
+          <td>{{savedEventList[i].dischargeStartDate}}</td>
+          <td>{{savedEventList[i].dischargeEndDate}}</td>
+          <td>{{savedEventList[i].status}}</td>
+          <td>
+            <a href="javascript:void(0)" (click)="viewDischargeEventDetails(savedEventList[i]?.eventId)" id="{{savedEventList[i]?.eventId}}">VIEW</a>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="7" class="cushion-bottom-0 buffer-bottom-0 cushion-left-0">
+            <div class="cushion-bottom-0 buffer-bottom-0" style="color: #d2c1ab;">
+              <div class="clearfix"> </div>
+            </div>
+            <div class="clearfix"> </div>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+  <div class="mydeq-global-page-content" *ngIf="showSubmittedEventSection">
+    <section>
+      <h3>Submitted discharge event result logs:</h3>
+      <div class="table-responsive ">
+        <table class="table h6" [mfData]="submittedEventList" #mf="mfDataTable" [mfRowsOnPage]="6" mfSortBy="eventName" mfSortOrder="desc" [isDynamicTable]="false">
+          <thead style="padding:5px !important">
+            <tr style="border-bottom: 2px #d2c1ab solid;">
+              <td>
+                <mfDefaultSorter by="eventId"><span class="buffer-left-0">Discharge Event ID</span></mfDefaultSorter>
+              </td>
+              <td>
+                <mfDefaultSorter by="outfallName">Point of discharge</mfDefaultSorter>
+              </td>
+              <td>Discharge Start Date</td>
+              <td>Discharge End Date</td>
+              <td>Status</td>
+              <td style="width: 10%">View</td>
+            </tr>
+
+          </thead>
+          <tbody class="font-weight-light">
+            <tr *ngFor="let dischargeEvent of mf.data;let i=index;" [ngClass]="{evenRow:isEvenRow(i),oddRow:!isEvenRow(i)}">
+              <td>{{dischargeEvent.eventId}}</td>
+              <td>{{dischargeEvent.outfallName}}</td>
+              <td>{{dischargeEvent.dischargeStartDate}}</td>
+              <td>{{dischargeEvent.dischargeEndDate}}</td>
+              <td>{{dischargeEvent.status}}</td>
+              <td>
+                <a href="javascript:void(0)" id="{{dischargeEvent.eventId}}" (click)="viewDischargeEventDetails(dischargeEvent.eventId)">VIEW</a>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="6" class="">
+                <div class="cushion-bottom-0 buffer-bottom-0" style="color: #d2c1ab;">
+                  <mfBootstrapPaginator></mfBootstrapPaginator>
+                  <div class="clearfix"> </div>
+                </div>
+                <div class="clearfix"> </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+    <div class="clearfix"></div>
+    <!-- action bar -->
+  </div>
+</div>
+<div class="card-footer">
+  <button type="button" class="btn btn-primary float-left" (click)="backClick()">
+    <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+  </button>
+  <button type="button" class="btn btn-primary float-right" (click)="continue(dischargeEventForm.value)">
+    CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+  </button>
+  <div class="clearfix"></div>
+</div>
+</form>
+

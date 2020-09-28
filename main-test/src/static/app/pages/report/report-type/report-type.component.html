@@ -1,0 +1,45 @@
+<form class="form-horizontal" [formGroup]="pageForm">
+  <div class="card-body">
+    <header-details (disableForm)="disableForm($event)"></header-details>
+    <h3>Which type of DMR do you need to create?</h3>
+    <h6 class="pl-3">Select one an click SAVE & CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="pl-0 py-4">
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['dmrType']}">
+        <input class="custom-control-input" type="radio" name="dmrType" formControlName="dmrType" value="NO_DATA_DMR"
+          id="NO_DATA_DMR">
+        <label class="custom-control-label" for="NO_DATA_DMR">No Data</label>
+      </div>
+      <div *ngIf = "pageForm.get('dmrType').value === 'NO_DATA_DMR'"class="row lightcream-bg w-75 mb-3 py-3" style="margin-left:5rem">                                
+        <div class="col-md-12 pr-0">                      
+         <span class= "h4 font-weight-light">Note: Only select No Data if the No Data reason is the same for the entire site (e.g., no discharge at the site). If the No Data reason is not the same for the entire site, select Wet Season Monitoring to input more than one reason.</span>
+      </div>
+      </div>
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['dmrType']}">
+        <input class="custom-control-input" type="radio" name="dmrType" formControlName="dmrType" value="WET_SEASON"
+          id="WET_SEASON">
+        <label class="custom-control-label" for="WET_SEASON">Wet Season Monitoring</label>
+      </div>
+      <div *ngIf = "utils.module === 'msgp_19'" class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['dmrType']}">
+        <input class="custom-control-input" type="radio" name="dmrType" formControlName="dmrType" value="ACC_MONIT"
+          id="ACC_MONIT">
+        <label class="custom-control-label" for="ACC_MONIT">Accelerated Monitoring</label>
+      </div>
+      <div *ngIf = "utils.module === 'msgp_19'" class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['dmrType']}">
+        <input class="custom-control-input" type="radio" name="dmrType" formControlName="dmrType" value="OTHER"
+          id="OTHER">
+        <label class="custom-control-label" for="OTHER">Other</label>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="backBtn" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+    </button>
+    <button type="button" id="continueBtn" class="btn btn-primary float-right" (click)="continue(pageForm.value)">
+      SAVE & CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

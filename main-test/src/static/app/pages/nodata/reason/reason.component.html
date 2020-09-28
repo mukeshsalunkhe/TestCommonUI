@@ -1,0 +1,26 @@
+<form class="form-horizontal" [formGroup]="reasonForm">
+    <div class="card-body pt-0">
+        <h3>{{pageText.header}}</h3>
+        <h6 class="pl-2">{{pageText.sub_header}}</h6>
+        <div *ngFor="let error of errorsList" class="alert alert-danger text-center">{{error}}</div>
+        <div class="custom-controls-stacked pl-2 pt-4">
+            <div class="custom-control custom-radio cushion-bottom-5" *ngFor="let reason of reasonsList; let first=first" [ngClass]="{'mt-2': !first}" [ngClass]="{'has-danger': errorFields['selectedReasonId']}">
+                <input type="radio" class="custom-control-input" [id]="reason.reasonId" [value]="reason.reasonId" formControlName="selectedReasonId">
+                <label class="custom-control-label" [attr.for]="reason.reasonId">{{reason.reasonText}}</label>
+            </div>
+            <div class="ml-5 w-75 pl-3">
+                <textarea class="form-control" rows="4" placeholder="Enter required comments here" maxlength="250" formControlName="selectedReasonComment" [ngClass]="{'has-danger': errorFields['selectedReasonComment']}" required></textarea>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+		        <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+		</button>
+        <button type="button" class="btn btn-primary float-right" (click)="continue(reasonForm.value)">
+			CONTINUE<span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+		</button>
+        <div class="clearfix"></div>
+    </div>
+    <div class="clearfix"></div>
+</form>

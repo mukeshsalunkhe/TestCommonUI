@@ -1,0 +1,104 @@
+<form class="form-horizontal" [formGroup]="pageForm">
+  <div class="card-body">
+    <header-details (disableForm)="disableForm($event)"></header-details>
+    <h3>Do you need to provide a No Data Indicator (NODI) code for this report?</h3>
+    <h6 class="pl-3">Select one, provide any requested information and click SAVE & CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="pl-0 py-4">
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['booleanAnswer']}">
+        <input class="custom-control-input" type="radio" name="booleanAnswer" formControlName="booleanAnswer" value="Y"
+          id="booleanAnswerY">
+        <label class="custom-control-label" for="booleanAnswerY">Yes</label>
+      </div>
+      <div *ngIf="pageForm.get('booleanAnswer').value === 'Y'" class="bg-secondary p-3 mx-5">
+        <h4>Choose a no data reason and select applicable outfalls.</h4>
+        <div class="form-row border-bottom pb-3" [ngClass]="{'has-danger': errorFields['outfallsForNoDiCodeList']}"
+          *ngIf="!disabledForm">
+          <div class="col">
+            <div ngbDropdown class="dropdown" ngbDropdown #NodiDown="ngbDropdown" placement="top">
+              <button class="btn btn-primary w-100 text-left font-weight-normal" ngbDropdownAnchor
+                (click)="NodiDown.toggle()">
+                <span class="pull-left px-0">{{nodiText}}</span>
+                <i class="fas float-right pt-1"
+                  [ngClass]="{'fa-chevron-down': !NodiDown.isOpen(), 'fa-chevron-up': NodiDown.isOpen() }"></i>
+              </button>
+              <ul class="w-100 list-group" ngbDropdownMenu>
+                <li class="dropdown-item" *ngFor="let noDiCodes of noDiCodesList">
+                  <div class="d-block clearfix" (click)="setNoDiCode(noDiCodes)">
+                    {{noDiCodes.nodiDesc}}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="col">
+            <div ngbDropdown class="dropdown" ngbDropdown #customDropDown="ngbDropdown" autoClose="outside"
+              placement="top" (openChange)="dropDownClose($event)">
+              <button class="btn btn-primary w-100 text-left font-weight-normal" ngbDropdownAnchor
+                (click)="customDropDown.toggle()" [disabled]="pageForm.get('nodiIdNo').value === '-1'">
+                <span class="pull-left px-0">SELECT ALL APPLICABLE OUTFALL</span>
+                <i class="fas float-right pt-1"
+                  [ngClass]="{'fa-chevron-down': !customDropDown.isOpen(), 'fa-chevron-up': customDropDown.isOpen() }"></i>
+              </button>
+              <ul class="w-100 list-group" ngbDropdownMenu>
+                <li class="dropdown-item" *ngFor="let outfall of outFallList">
+                  <div class="d-block clearfix" (click)="addOutFallNoDiCode(outfall)">
+                    <div class="float-left" [ngClass]="{'text-muted': outfall.added}">{{outfall.outfallName}}</div>
+                    <div class="float-right"><i class="fa fa-lg fa-plus-square align-vertical"
+                        [ngClass]="{'text-muted': outfall.added}"></i></div>
+                    <div class="clearfix"></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <h4 class="pt-4">Selected Outfalls</h4>
+        <table class="table table-striped border-bottom mt-2 h6">
+          <thead>
+            <tr>
+              <th>Selected Outfall</th>
+              <th>NODI</th>
+              <th class="no_bar" style="width: 7%;"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let outfall of outFallNoDiCodeList; let i=index" [ngClass]="{'bg-white': i % 2 == 0}">
+              <td>{{outfall.outfallName}}</td>
+              <td>{{outfall.nodiDesc }}</td>
+              <td><a href="javascript:void(0)" [ngbPopover]="deleteSample" container="body" id="deleteSample{{i}}"
+                  *ngIf="!disabledForm"><i class="pl-2 fa fa-trash-alt text-primary"></i></a></td>
+              <ng-template #deleteSample>
+                <h6>Are you sure you want to delete?</h6>
+                <div class="w-100 d-block clearfix">
+                  <button type="button" class="btn btn-primary btn-sm float-left" [id]="'delete_line_item_Y_'+ i"
+                    (click)="deleteOutfall(i, outfall);">YES</button>
+                  <button type="button" class="btn btn-danger  btn-sm float-right"
+                    [id]="'delete_line_item_N_'+ i">NO</button>
+                </div>
+              </ng-template>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="custom-control custom-radio" [ngClass]="{'has-danger': errorFields['booleanAnswer']}">
+        <input class="custom-control-input" type="radio" name="booleanAnswer" formControlName="booleanAnswer" value="N"
+          id="booleanAnswerN">
+        <label class="custom-control-label" for="booleanAnswerN">No</label>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="backBtn" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+    </button>
+    <button type="button" id="continueBtn" class="btn btn-primary float-right"
+      (click)="continue(pageForm.getRawValue())">
+      SAVE & CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>
+<mydeq-alert-modal></mydeq-alert-modal>

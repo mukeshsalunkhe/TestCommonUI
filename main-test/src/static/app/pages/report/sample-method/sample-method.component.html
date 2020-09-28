@@ -1,0 +1,94 @@
+<form class="form-horizontal" [formGroup]="pageForm">
+  <div class="card-body">
+    <header-details (disableForm)="disableForm($event)"></header-details>
+    <h3>What method did you use to collect the samples?</h3>
+    <h6 class="pl-3">Select one option per outfall and click SAVE & CONTINUE.</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <div class="px-3 py-4">
+      <table class="table table-striped border-bottom mt-2 h5" [mfData]="outfallList" #mf="mfDataTable" [mfRowsOnPage]="maxRecord">
+        <thead>
+          <tr>
+            <th>
+              <mfDefaultSorter by="outfallName">Outfall</mfDefaultSorter>
+            </th>
+            <th>
+              <mfDefaultSorter by="parameterName">Parameter</mfDefaultSorter>
+            </th>
+            <th style="width:18%">
+              <div class="d-inline-flex clearfix pl-2">
+                <div class="w-auto float-left">Grab</div>
+                <div class="custom-control custom-checkbox custom-checkbox-sm float-right mr-0 w-75 pl-5 pt-1">
+                  <input type="checkbox" class="custom-control-input" id="selectAllGrab" required
+                    (change)="setAllGrab()" [checked]="pageForm.get('applyGrabToAll').value === 'Y'"
+                    [disabled]="pageForm.get('applyGrabToAll').disabled" />
+                  <label class="custom-control-label" for="selectAllGrab">Select All</label>
+                </div>
+                <div class="clearfix"></div>
+              </div>
+            </th>
+            <th style="width:22%">Flow-Weighted Continuous</th>
+            <th style="width:23%">Flow-Weighted Combination</th>
+          </tr>
+        </thead>
+        <tbody formArrayName="outfallSampleMethodList">
+          <tr class="font-weight-light" *ngFor="let outfall of mf.data;let i=index" [formGroupName]="outfall.index">
+            <td>{{outfall.outfallName}}</td>
+            <td>{{outfall.parameterName}}</td>
+            <td class="text-center">
+              <div class="custom-control custom-radio custom-radio-sm custom-control-inline"
+                [ngClass]="{'has-danger': errorFields['outfallList[' + outfall.index +'].sampleMethod']}">
+                <input [id]="'sampleMethod_grab_' + outfall.index" class="custom-control-input" type="radio"
+                  formControlName="sampleMethod" (change)="checkAllGrab(pageForm.value)" value="GRAB">
+                <label [attr.for]="'sampleMethod_grab_' + outfall.index" class="custom-control-label"></label>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="custom-control custom-radio custom-radio-sm custom-control-inline"
+                [ngClass]="{'has-danger': errorFields['outfallList[' + outfall.index +'].sampleMethod']}">
+                <input [id]="'sampleMethod_continuous_' + outfall.index" class="custom-control-input" type="radio"
+                  disabled=true *ngIf="outfall.disableFlowOptions === 'Y'">
+                <!--Flow Option not applicable -->
+                <input [id]="'sampleMethod_continuous_' + outfall.index" class="custom-control-input" type="radio"
+                  formControlName="sampleMethod" value="FLOW_WGHT_CONT" (change)="checkAllGrab(pageForm.value)"
+                  *ngIf="outfall.disableFlowOptions === 'N'">
+                <label [attr.for]="'sampleMethod_continuous_' + outfall.index" class="custom-control-label"></label>
+              </div>
+            </td>
+            <td class="text-center">
+              <div class="custom-control custom-radio custom-radio-sm custom-control-inline"
+                [ngClass]="{'has-danger': errorFields['outfallList[' + outfall.index +'].sampleMethod']}">
+                <input [id]="'sampleMethod_continuous_' + outfall.index" class="custom-control-input" type="radio"
+                  disabled=true *ngIf="outfall.disableFlowOptions === 'Y'">
+                <!--Flow Option not applicable -->
+                <input [id]="'sampleMethod_combination_' + outfall.index" class="custom-control-input" type="radio"
+                  formControlName="sampleMethod" value="FLOW_WGHT_COMBO" (change)="checkAllGrab(pageForm.value)"
+                  *ngIf="outfall.disableFlowOptions === 'N'">
+                <label [attr.for]="'sampleMethod_combination_' + outfall.index" class="custom-control-label"></label>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot *ngIf="outfallList && outfallList.length > 15">
+          <tr>
+            <td class="px-0" colspan="5">
+              <div class="cushion-bottom-0 buffer-bottom-0">
+                <mfBootstrapPaginator></mfBootstrapPaginator>
+                <!--[errorPages]="errorRowNos[sampleIndex]"-->
+              </div>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="backBtn" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span> BACK
+    </button>
+    <button type="button" id="continueBtn" class="btn btn-primary float-right" (click)="continue(pageForm.value)">
+      SAVE & CONTINUE <span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

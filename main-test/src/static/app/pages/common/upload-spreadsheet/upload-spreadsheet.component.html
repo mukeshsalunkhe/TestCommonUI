@@ -1,0 +1,47 @@
+<form class="form-horizontal" [formGroup]="uploadForm">
+  <div class="card-body">
+    <div *ngIf="utils.module === 'msgp_19'">
+      <header-details [hideEditBanner]="true"></header-details>
+    </div>
+    <h3>{{pageText?.header}}</h3>
+    <h6 class="pl-3">{{pageText?.sub_header}}</h6>
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+
+    <div class="row no-gutters pl-3" *ngIf="model && model.fileName">
+      <div class="col-auto">
+        <h5>Uploaded File: </h5>
+      </div>
+      <div class="col-auto h5 font-weight-light">
+        <a [href]="'service/' + this.utils.module + '/download/uploaded_excel'" target="_blank">{{model?.fileName}}
+          <span class="arrow right"> <i class="fa fa-chevron-right"></i></span></a>
+      </div>
+    </div>
+
+    <div class="form-group p-4 bg-secondary mt-4">
+      <div class="input-group">
+        <div class="input-group-prepend" (click)="chooseFile('uploadFile')" style="cursor: pointer;">
+          <span class="input-group-text bg-primary text-white"><span *ngIf="utils.module === 'msgp_19'"class="h6 mb-0">CHOOSE FILE <i
+                class="fa fa-chevron-right pl-1"></i> </span><span *ngIf="utils.module === 'cgp20'"class="h6 mb-0">SELECT FILE<i
+                  class="fa fa-chevron-right pl-1"></i> </span></span>
+        </div>
+        <div class="custom-file h6" [ngClass]="{'has-danger': errorFields['spreadSheetFile']}">
+          <input type="file" class="custom-file-input" id="uploadFile" name="uploadFile" (change)="uploadFile($event)"
+            ngf-max-size="20MB">
+          <label class="custom-file-label pt-2" for="uploadFile">{{model?.spreadSheetFile?.name| slice:0:75}}</label>
+        </div>
+        <div class="h6 pt-2 w-100 text-right font-weight-light mb-0">XLS, XLSX files only</div>
+        <div class="clearfix"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i> </span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue()">
+      {{pageText?.continueBtn_lbl}} <span class="arrow right"> <i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>
+<mydeq-alert-modal></mydeq-alert-modal>

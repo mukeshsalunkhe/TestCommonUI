@@ -1,0 +1,231 @@
+  <div class="card-body">
+    <h5 *ngIf = "utils.module === 'msgp_19'" class="pb-0 mb-0 pt-3">To create a new MSGP DMR, click REPORT A NEW DMR. Once a report has been drafted or
+      submitted, it will be listed below.</h5>
+      <h3 *ngIf = "utils.module === 'cgp20'" class="pb-0 mb-0 pt-3">What sampling data do you need to submit?</h3>
+        <h5 *ngIf = "utils.module === 'cgp20'" class="pb-0 mb-0 pt-3">To create a new CGP DMR, click CREATE NEW. Once a report has been drafted or submitted, it will be added to the following list.</h5>
+    <div *ngIf = "utils.module === 'msgp_19'"  class="py-4">
+      <button type="button" class="btn btn-lg btn-primary" (click)="createNewDMR(reportExistModal)">REPORT A NEW
+        DMR<span class="arrow right"><i class="fa fa-chevron-right"></i></span></button>
+    </div>
+    <div *ngIf = "utils.module === 'cgp20'"  class="py-4">
+      <button type="button" class="btn btn-lg btn-primary" (click)="createNewDMR(reportExistModal)">CREATE NEW<span class="arrow right"><i class="fa fa-chevron-right"></i></span></button>
+    </div>
+    <hr />
+
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+
+    <div class="pt-2">
+      <ngb-accordion #acc="ngbAccordion" [destroyOnHide]="false" [activeIds]="preOpenAccordion">
+        <ngb-panel id="ngb-panel-require" type="primary">
+          <ng-template ngbPanelTitle>
+            <div class="float-left h5 mb-0 text-white">DMR Requirement Overview</div>
+            <div class="float-right h6 primary mb-0 text-white">
+              <i id="chevron-require" class="fa fa-lg" aria-hidden="true"
+                [ngClass]="{'fa-chevron-up':acc.isExpanded('ngb-panel-require'),'fa-chevron-down':!acc.isExpanded('ngb-panel-require')}"></i>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent class="bg-info">
+            <h5 class="py-3">The following list provides DMR statuses and due dates for each reporting period.</h5>
+            <table class="table pl-0 table-striped" [mfData]="model.dmrReqDetailList" #mfRequire="mfDataTable"
+              [mfRowsOnPage]="15" mfSortBy="dueDate" mfSortOrder="desc">
+              <thead>
+                <tr>
+                  <th class="h6 font-regular pl-2">Reporting Period</th>
+                  <th class="h6 font-regular pl-2" style="width:15%">
+                    <mfDefaultSorter by="downloadStatus">Status</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:10%;">
+                    <mfDefaultSorter by="reportingEndDate">Due Date</mfDefaultSorter>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let report of mfRequire.data; let i=index">
+                  <td class="h6 font-regular pl-2">{{report.reportingName}}</td>
+                  <td class="h6 font-regular pl-2">{{report.rptStatus}}</td>
+                  <td class="h6 font-regular pl-2">{{report.dueDate}}</td>
+                </tr>
+              </tbody>
+              <tfoot *ngIf="model && model.dmrReqDetailList && mfRequire.data.length > 15">
+                <tr>
+                  <td colspan="4">
+                    <div class="cushion-bottom-0 buffer-bottom-0">
+                      <mfBootstrapPaginator></mfBootstrapPaginator>
+                      <!--[errorPages]="errorRowNos[sampleIndex]"-->
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </ng-template>
+        </ngb-panel>
+
+
+        <ngb-panel id="ngb-panel-draft" type="primary">
+          <ng-template ngbPanelTitle>
+            <div class="float-left h5 mb-0 text-white">Draft DMRs</div>
+            <div class="float-right h6 primary mb-0 text-white">
+              <i id="chevron-draft" class="fa fa-lg" aria-hidden="true"
+                [ngClass]="{'fa-chevron-up':acc.isExpanded('ngb-panel-draft'),'fa-chevron-down':!acc.isExpanded('ngb-panel-draft')}"></i>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent class="bg-info">
+            <h5 class="py-3">The following are DMRs that have not yet been submitted to ADEQ. Click Select an Action for
+              available actions.</h5>
+
+            <div *ngIf="deleteConfirmation" class="alert alert-success text-center bg-primary text-white" role="alert">
+              Successfully deleted application</div>
+            <table class="table pl-0 table-striped" [mfData]="model.draftDMRList" #mfDraft="mfDataTable"
+              [mfRowsOnPage]="15" mfSortBy="reportingId" mfSortOrder="desc">
+              <thead>
+                <tr>
+                  <th class="h6 font-regular pl-2" style="width:10%">Report ID</th>
+                  <th class="h6 font-regular pl-2" style="width:17%">
+                    <mfDefaultSorter by="sampleStartDate">Event/Sample Date</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:20%">
+                    <mfDefaultSorter by="wetSeasonName">Wet Season</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:auto">
+                    <mfDefaultSorter by="dmrType">Type</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:15%">
+                    <mfDefaultSorter by="rptStatus">Status</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:20%">Actions</th>
+                  <th class="no_bar" style="width:40px"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let report of mfDraft.data; let i=index">
+                  <td class="h6 font-regular pl-2">{{report.reportingId}}</td>
+                  <td class="h6 font-regular pl-2">{{report.sampleStartDate}}</td>
+                  <td class="h6 font-regular pl-2">{{report.wetSeasonName}}</td>
+                  <td class="h6 font-regular pl-2">{{report?.dmrType?.replace("_", " ")}}</td>
+                  <td class="h6 font-regular pl-2">
+                    {{report.status === 'SUBM' ? 'READY TO CERTIFY' : report.downloadStatus}}</td>
+                  <td class="h6 font-regular pl-2">
+                    <select [id]="'action_' + i" class="custom-select" #action
+                      (change)="actionClick(report.globalReqId, i, action.value, report.downloadStatus)">
+                      <option value="-1">Select an Action</option>
+                      <option value="download"
+                        *ngIf="report.downloadStatus !== 'DRAFT' && report.dmrType !== 'NO_DATA_DMR' && report.status !== 'SUBM'">
+                        Download</option>
+                      <option value="upload"
+                        *ngIf="report.downloadStatus !== 'DRAFT' && report.dmrType !== 'NO_DATA_DMR' && report.status !== 'SUBM'">
+                        Upload</option>
+                      <option value="edit" *ngIf="report.status !== 'SUBM'">Edit</option>
+                      <option value="edit" *ngIf="report.status === 'SUBM'">Certify</option>
+                    </select>
+                  </td>
+                  <td class="h6 font-regular pl-2"><a [id]="report.reportingId" href="javascript:void(0)"
+                      [ngbPopover]="popContent" #p="ngbPopover" title="Delete Report" container="body"><i
+                        class="fas fa-trash-alt" container="body"></i></a></td>
+                  <ng-template #popContent>
+                    <div class="pb-2">Are you sure you want to delete?</div>
+                    <button type="button" class="btn btn-sm btn-danger float-left"
+                      (click)="deleteReport(report.globalReqId, report.index);p.close()">YES</button>
+                    <button type="button" class="btn btn-sm btn-success float-right" (click)="p.close()">NO</button>
+                    <div class="clearfix"></div>
+                  </ng-template>
+                </tr>
+              </tbody>
+              <tfoot *ngIf="model && model.draftDMRList && model.draftDMRList.length > 15">
+                <tr>
+                  <td colspan="4">
+                    <div class="cushion-bottom-0 buffer-bottom-0">
+                      <mfBootstrapPaginator></mfBootstrapPaginator>
+                      <!--[errorPages]="errorRowNos[sampleIndex]"-->
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </ng-template>
+        </ngb-panel>
+
+        <ngb-panel id="ngb-panel-submitted" type="primary">
+          <ng-template ngbPanelTitle>
+            <div class="float-left h5 mb-0 text-white">Submitted DMRs</div>
+            <div class="float-right h6 primary mb-0 text-white">
+              <i id="chevron-submitted" class="fa fa-lg" aria-hidden="true"
+                [ngClass]="{'fa-chevron-up':acc.isExpanded('ngb-panel-submitted'),'fa-chevron-down':!acc.isExpanded('ngb-panel-submitted')}"></i>
+            </div>
+          </ng-template>
+          <ng-template ngbPanelContent class="bg-info">
+            <h5 class="py-3">Click VIEW to review submitted reports.</h5>
+            <table class="table pl-0 table-striped" [mfData]="model.submittedDMRList" #mfSubmitted="mfDataTable"
+              [isDynamicTable]="true" [mfRowsOnPage]="15" mfSortBy="reportingId" mfSortOrder="desc">
+              <thead>
+                <tr>
+                  <th class="h6 font-regular pl-2" style="width:10%">
+                    <mfDefaultSorter by="reportingStartDate">Report ID</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:17%">
+                    <mfDefaultSorter by="reportingStartDate">Event/Sample Date</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:20%">
+                    <mfDefaultSorter by="wetSeasonName">Wet Season</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:auto">
+                    <mfDefaultSorter by="dmrType">Type</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:15%">
+                    <mfDefaultSorter by="downloadStatus">Status</mfDefaultSorter>
+                  </th>
+                  <th class="h6 font-regular pl-2" style="width:15%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let report of mfSubmitted.data; let i=index">
+                  <td class="h6 font-regular pl-2">{{report.reportingId}}</td>
+                  <td class="h6 font-regular pl-2">{{report.sampleStartDate}}</td>
+                  <td class="h6 font-regular pl-2">{{report.wetSeasonName}}</td>
+                  <td class="h6 font-regular pl-2">{{report.dmrType?.replace("_", " ")}}</td>
+                  <td class="h6 font-regular pl-2">{{actionText[report.status]}}</td>
+                  <td *ngIf = "utils.module === 'msgp_19'" class="h6 font-regular pl-2"><a href="service/msgp_19/resumeApp/{{report.globalReqId}}">VIEW</a>
+                  <td *ngIf = "utils.module === 'cgp20'" class="h6 font-regular pl-2"><a href="service/cgp20/resumeApp/{{report.globalReqId}}">VIEW</a>
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot *ngIf="model && model.submittedDMRList && model.submittedDMRList.length > 15">
+                <tr>
+                  <td colspan="4">
+                    <div class="cushion-bottom-0 buffer-bottom-0">
+                      <mfBootstrapPaginator></mfBootstrapPaginator>
+                    </div>
+                  </td>
+                </tr>
+              </tfoot>
+            </table>
+          </ng-template>
+        </ngb-panel>
+      </ngb-accordion>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="utils.gotoDashboard()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span>RETURN TO mySTUFF
+    </button>
+    <div class="clearfix"></div>
+  </div>
+
+  <ng-template #reportExistModal let-modal>
+    <div class="modal-header mx-3 pl-0">
+      <h1 class="modal-title text-primary font-weight-bold">ALERT: REPORT ALREADY EXISTS</h1>
+    </div>
+    <div class="modal-body p-3" id="accLockModal">
+      <h3>There is currently a draft DMR for {{sampleDates}}. Click PROCEED if you would like to create a new report or
+        CANCEL to return to the DMR Inventory.</h3>
+    </div>
+    <div class="modal-footer" id="accLockFooter">
+      <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="modal.dismiss('Cross click')">
+        <span class="arrow left"><i class="fa fa-chevron-left"></i></span>CANCEL
+      </button>
+      <button type="button" id="submitButton2" class="btn btn-primary float-right"
+        (click)="reportDMR();modal.dismiss('Cross click');">PROCEED <span class="arrow right"><i
+            class="fa fa-chevron-right"></i></span></button>
+    </div>
+  </ng-template>
+
+  <mydeq-alert-modal></mydeq-alert-modal>

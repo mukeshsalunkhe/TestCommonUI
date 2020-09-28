@@ -1,0 +1,72 @@
+<form [formGroup]="logMonitoringQuestionForm">
+  <div class="card-body pt-0">
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+      <h5 class="font-weight-light">REPORTING PERIOD:{{model.reportingPeriodText}}</h5>
+      <h3 class="mb-2">Review Logged DMR Information</h3>
+      <h6 class="font-weight-normal pl-2">Review the following information, if there are changes to be made click the eye icon to EDIT the DMR.</h6>
+      <div class="pl-2" *ngIf="showListing">
+        <table class="table table-striped h6" [mfData]="model.outfallReportingDetailList" #mf="mfDataTable" [mfRowsOnPage]="15" mfSortBy="outfallName" mfSortOrder="desc">
+          <thead>
+            <tr>
+              <th style="width: 7%">Row #</th>
+              <th><mfDefaultSorter by="outfallName">Monitoring Point ID</mfDefaultSorter></th>
+              <th>Monitoring Point Type</th>
+              <th style="width: 7%">Source</th>
+              <th>Sampling Type</th>
+              <th style="width: 10%"># of Samples</th>
+              <th style="width: 7%">Status</th>
+              <th style="width: 7%">View</th>
+              <th style="width: 7%">Delete</th>
+            </tr>
+          </thead>
+          <tbody class="font-weight-light">
+            <tr *ngFor="let outfallReportingDetail of mf.data;let i=index">
+              <td>{{i + 1}}</td>
+              <td>{{outfallReportingDetail.outfallName}}</td>
+              <td>{{outfallReportingDetail.locationType == 'FSP' ?'Field Screening Point' : 'Outfall'}}</td>
+              <td>{{outfallReportingDetail.newIndicator == 'Y' ? 'DMR' : 'NOI' }}</td>
+              <td>{{outfallReportingDetail.samplingType == 'VDM' ?'Visual':'Analytical'}}</td>
+              <td>{{outfallReportingDetail.noOfSamples}}</td>
+              <td>{{outfallReportingDetail.status == 'SAVD' ? 'SAVED' : 'DRAFT' }}</td>
+              <td>
+                <a href="javascript:void(0)" id="{{outfallReportingDetail.outfallMonitId}}" (click)="viewOutfallSampleDataDetails(outfallReportingDetail.outfallMonitId,outfallReportingDetail.samplingType)">
+                  VIEW
+                </a>
+              </td>
+              <td>
+                <a href="javascript:void(0)" id="{{outfallReportingDetail.outfallMonitId}}" [ngbPopover]="deleteConfirm">
+                  <i class="fa fa-trash-alt fa-lg text-primary"></i>
+                </a>
+              </td>
+              <ng-template #deleteConfirm>
+                <h6 *ngIf="outfallReportingDetail.newIndicator == 'Y'" class="col-md-12 ">It will delete outfall and its logged data?</h6>
+                <h6 *ngIf="outfallReportingDetail.newIndicator == 'N'" class="col-md-12 ">It will delete outfall's logged data?</h6>
+                <div class="d-block w-100 clearfix">
+                  <button type="button" class="btn btn-primary float-left" id="delete_user_Y" (click)="deleteOutfallSampleDetails('Y',outfallReportingDetail.outfallMonitId,outfallReportingDetail.samplingType)">YES</button>
+                  <button type="button" class="btn btn-danger float-right" id="delete_user_N" (click)="deleteOutfallSampleDetails('N',outfallReportingDetail.outfallMonitId,outfallReportingDetail.samplingType)">NO</button>
+                  <div class="clearfix"></div>
+                </div>
+              </ng-template>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="9">
+                <mfBootstrapPaginator></mfBootstrapPaginator>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    <div class="clearfix"></div>
+  </div>
+  <div class="card-footer">
+    <button type="button" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+    </button>
+    <button type="button" class="btn btn-primary float-right" (click)="continue(logMonitoringQuestionForm.value)">
+      CONTINUE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

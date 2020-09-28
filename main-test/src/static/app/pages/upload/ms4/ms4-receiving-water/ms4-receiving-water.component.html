@@ -1,0 +1,38 @@
+<form [formGroup]="receivingWaterForm">
+  <div class="card-body pt-0">
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <h5 class="font-weight-light">REPORTING PERIOD:{{model.reportingPeriodText}}</h5>
+    <h3>Identify receiving waters for the {{model.monitoringType === 'VDM'?'visual':'analytical'}} monitoring program:</h3>
+    <h6 class="pl-2">Fill in the following information and click SAVE & CONTINUE.</h6>
+    <div class="row pl-2 pt-2 h5">
+      <div class="col-3">Outfall Name/Number:</div>
+      <div class="col-5 font-weight-light">{{model?.outfallDetails?.outfallName}}</div>
+    </div>
+    <div class="row pl-2 pt-2 h5">
+      <div class="col-3">Outfall/Field Screening Point:</div>
+      <div class="col-8 font-weight-light">{{model?.outfallDetails?.locationType === 'OUTFAL'?'Outfall':'Field Screening Point'}}</div>
+    </div>
+    <div class="row pl-2 pt-2 h5">
+      <div class="col-3">Receiving Water Type:</div>
+		  <div class="col-8 font-weight-light">{{selectedWaterBodyTypes}}</div>
+    </div>
+    <div class="row pl-2 pt-2">
+      <div class="col-3 pt-1 h5">Receiving Water:</div>
+      <div class="col-8" [ngClass]="{'has-danger': error_fields['outfallDetails.selectedWaterBodyId']}">
+          <select class="custom-select" formControlName="selectedWaterBodyId" (change)="receivingWaterChange($event.target.value)">
+            <option value="-1">SELECT ONE</option>
+            <option *ngFor="let water of model?.outfallDetails?.waterbodyList" value={{water.waterBodyId}}>{{water.waterBodyName}}</option>
+          </select>
+      </div>
+    </div>
+  </div>
+  <div class="card-footer">
+    <button type="button" id="submitButton" class="btn btn-primary float-left" (click)="goBack()">
+      <span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+    </button>
+    <button type="button" id="submitButton2" class="btn btn-primary float-right" (click)="continue(receivingWaterForm.value)">
+      SAVE & CONTINUE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+    </button>
+    <div class="clearfix"></div>
+  </div>
+</form>

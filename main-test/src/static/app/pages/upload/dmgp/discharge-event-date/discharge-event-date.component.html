@@ -1,0 +1,50 @@
+<form [formGroup]="dischargeEventDateForm">
+  <div class="card-body pt-0">
+    <div *ngFor="let error of errorsList" class="alert alert-danger text-center" role="alert">{{error}}</div>
+    <h3>For your discharge event, what is the point of discharge name and the discharge event dates?</h3>
+    <h6 class="pl-2">Provide any requested information and click CONTINUE.</h6>
+    <table class="table border-bottom mt-2 h6">
+      <thead>
+        <tr>
+          <th>Point of Discharge Name</th>
+          <th style="width:20%">Discharge Start Date</th>
+          <th style="width:20%">Discharge End Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="font-weight-light">
+          <td [ngClass]="{'has-danger': error_fields['dischargeEvent.outfallId']}">
+            <select class="custom-select" formControlName="outfallId">
+              <option value="-1">SELECT ONE</option>
+              <option *ngFor="let outfall of model.outfalls" value={{outfall.outfallId}}>{{outfall.outfallName}}</option>
+            </select>
+          </td>
+          <td>
+            <div class="input-group" [ngClass]="{'has-danger': error_fields['dischargeEvent.dischargeStartDate']}">
+              <div class="input-group-prepend">
+                <button id="pickupDateBtn" class="btn btn-primary" (click)="dischargeStartDateDP.toggle()" type="button"><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+              </div>
+              <input id="pickupDate" type="text" class="form-control" maxlength="10" formControlName="dischargeStartDate" ngbDatepicker #dischargeStartDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate" />
+            </div>
+          </td>
+          <td>
+            <div class="input-group" [ngClass]="{'has-danger': error_fields['dischargeEvent.dischargeEndDate']}">
+              <div class="input-group-prepend">
+                <button id="pickupDateBtn" class="btn btn-primary" (click)="dischargeEndDateDP.toggle()" type="button"><i class="fas fa-calendar-alt fa-lg" aria-hidden="true"></i></button>
+              </div>
+              <input id="pickupDate" type="text" class="form-control" maxlength="10" formControlName="dischargeEndDate" ngbDatepicker #dischargeEndDateDP="ngbDatepicker" placeholder="mm/dd/yyyy" [maxDate]="currentDate" />
+            </div>
+          </td>
+        </tr>
+      </table>
+  </div>
+	<div class="card-footer">
+		<button type="button" class="btn btn-primary float-left" (click)="backClick()">
+			<span class="arrow left"><i class="fa fa-chevron-left"></i></span>BACK
+		</button>
+		<button type="button" class="btn btn-primary float-right" (click)="continue(dischargeEventDateForm.value)">
+			CONTINUE<span class="arrow right"><i class="fa fa-chevron-right"></i></span>
+		</button>
+		<div class="clearfix"></div>
+	</div>
+</form>
