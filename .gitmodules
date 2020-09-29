@@ -2,3 +2,9 @@
 	path = main-test/src/static/core
 	url = https://github.com/mitesh-mankame/UI-Library.git
 	branch = v2.0
+[submodule "UI-Library"]
+	path = UI-Library
+	url = https://github.com/mitesh-mankame/UI-Library.git
+[submodule "newcore"]
+	path = newcore
+	url = https://github.com/mitesh-mankame/UI-Library.git
